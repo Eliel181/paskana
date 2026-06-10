@@ -1,2 +1,70 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@theme {
+    /* Colores */
+    --color-leaf: #8C6239;
+    --color-leaf-light: #C6AC8F;
+    --color-earth: #5E412F;
+    --color-moss: #4E3629;
+    --color-blossom: #D4A373;
+    --color-cream: #FDFBF7;
+    --color-text-dark: #4A3E3D;
+
+    /* Fuentes */
+    --font-display: "Libre Baskerville", serif;
+    --font-sans: "Open Sans", sans-serif;
+}
+
+@layer utilities {
+    .bg-leaf {
+        @apply bg-leaf;
+    }
+
+    .text-leaf {
+        @apply text-leaf;
+    }
+
+    .font-display {
+        @apply font-display;
+    }
+
+    .font-sans {
+        @apply font-sans;
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Open+Sans:wght@400;500;700&display=swap');
+
+.hero-bg {
+    background-image:
+        linear-gradient(rgba(253, 251, 247, 0.75), rgba(253, 251, 247, 0.45)),
+        url('/cafe_background.png');
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-shadow {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}

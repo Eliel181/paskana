@@ -1,0 +1,32 @@
+<!-- Navigation -->
+<nav class="bg-white/90 backdrop-blur-sm fixed w-full z-50 border-b border-leaf/20 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-center h-20">
+            <a href="#"
+                class="font-display text-2xl font-bold tracking-wide text-moss hover:opacity-90 transition-opacity">PASKANA</a>
+
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Menu</a>
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Our Beans</a>
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Find Us</a>
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Our Story</a>
+                <a href="#"
+                    class="px-5 py-2.5 bg-leaf text-cream rounded-full text-sm font-semibold hover:bg-moss transition-all hover:shadow-md">Order
+                    Online</a>
+            </div>
+
+            <button class="md:hidden p-2 text-text-dark hover:text-leaf transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <router-outlet />
+</main>
+
+<app-footer></app-footer>

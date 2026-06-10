@@ -73,3 +73,80 @@ ng g s core/services/activityFeed  --skip-tests
 ng g s core/services/cloudinary  --skip-tests
 ng g s core/services/eleccion  --skip-tests
 ```
+
+```bash
+# Guards
+ng g guard core/guards/auth --skip-tests
+ng g guard core/guards/admin --skip-tests
+ng g guard core/guards/empleado --skip-tests
+ng g guard core/guards/public --skip-tests
+```
+
+```bash
+# Interfaces
+ng g i core/interfaces/usuario --type=model
+ng g i core/interfaces/escuela --type=model
+ng g i core/interfaces/tarea --type=model
+ng g i core/interfaces/activityFeed --type=model
+ng g i core/interfaces/eleccion --type=model
+ng g i core/interfaces/candidato --type=model
+ 
+
+```
+```bash
+# Admin
+ng g c features/admin/gestion-usuarios --skip-tests
+ng g c features/admin/edit-usuario --skip-tests
+
+# Schools
+ng g c features/schools/school-list --skip-tests
+ng g c features/schools/school-management --skip-tests
+
+# Tasks
+ng g component features/tasks/gestion-tareas --skip-tests
+ng g component features/tasks/edit-tarea --skip-tests
+
+# Employee
+ng g component features/employee/mis-tareas --skip-tests
+ng g component features/employee/detalle-tarea --skip-tests
+
+#Referents
+ng g c features/referents/calendario --skip-tests
+
+#Eleccion
+ng g c features/eleccion/eleccion-list --skip-tests
+ng g c features/eleccion/eleccion-config --skip-tests
+
+# Public
+ng g c features/auth/login --skip-tests
+ng g c features/auth/register --skip-tests
+
+# Perfil Usuario
+ng g component features/auth/perfil --skip-tests
+
+
+# Verificar Email
+ng g component features/auth/verificar-email --skip-tests
+
+# Olvidaste tu contraseña
+ng g component features/auth/forgot-password --skip-tests
+
+# PublicLayout → para login, register, reset-password, verificar-email (pantallas sin sidebar ni header).
+#PrivateLayout → para todo lo que va con sidebar + header + router-outlet.
+
+ng g c layout/public-layout --skip-tests
+ng g c layout/private-layout --skip-tests
+
+# Componente compartido un Spinner
+ng g c shared/spinner-overlay --skip-tests
+
+# Dashboards
+ng g c dashboards/dashboard-admin/dashboard --skip-tests
+ng g c dashboards/dashboard-admin/grafico-usuarios --skip-tests
+
+# Para Votacion
+ng g c votacion/carrusel-elecciones/presentacion-postulantes --skip-tests
+
+# Para la lista de elecciones
+ng g c votacion/lista-elecciones/lista-elecciones --skip-tests
+```

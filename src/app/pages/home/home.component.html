@@ -1,0 +1,104 @@
+<!-- Hero Section -->
+<section class="hero-bg min-h-screen pt-20 flex items-center">
+    <div class="max-w-7xl mx-auto px-6 py-12 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Text content - now with better contrast -->
+            <div class="space-y-8 text-center lg:text-left bg-cream/80 p-8 rounded-2xl backdrop-blur-sm card-shadow border border-cream/55">
+                <div class="space-y-6">
+                    <h1 class="font-display text-4xl md:text-5xl lg:text-6xl leading-tight text-moss text-shadow">
+                        <span class="block text-leaf font-bold">Sip, Relax, &</span>
+                        <span class="block font-light">Find Your Paskana</span>
+                    </h1>
+                    <p class="text-lg text-text-dark/90 max-w-lg mx-auto lg:mx-0">
+                        Welcome to Paskana, your cozy neighborhood sanctuary. Experience our premium selection of artisan coffee, freshly baked goods, and a warm, inviting space to unwind.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#"
+                        class="px-8 py-3 bg-leaf text-cream font-semibold rounded-full hover:bg-moss transition-all hover:scale-105 duration-300 shadow-lg text-center">
+                        Our Menu
+                    </a>
+                    <a href="#"
+                        class="px-8 py-3 border border-text-dark text-text-dark font-semibold rounded-full hover:bg-white/95 transition-all hover:scale-105 duration-300 text-center">
+                        Our Story
+                    </a>
+                </div>
+            </div>
+
+            <!-- Featured coffee card - resized and centered -->
+            <div class="relative animate-float max-w-sm mx-auto lg:mr-0 w-full">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow transition-transform duration-300 hover:scale-[1.02]">
+                    <img src="/featured_coffee.png"
+                        alt="Featured Coffee" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-xl text-moss">Paskana Special Latte</h3>
+                        <p class="text-text-dark/80 mt-1 text-sm leading-relaxed">"Rich double-shot espresso, velvet-textured oat milk, and a hint of house-made cardamom syrup."</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="font-semibold text-leaf text-xl">$4.75</span>
+                            <button
+                                class="px-5 py-2.5 bg-blossom text-white rounded-full text-sm font-medium hover:bg-blossom/90 hover:shadow-md transition-all cursor-pointer">
+                                Order Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="absolute -top-4 -right-4 bg-leaf-light text-cream px-4 py-1.5 rounded-full text-xs font-semibold shadow-md uppercase tracking-wider">
+                    Today's Special
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cafe benefits section -->
+<div class="bg-cream/40 py-16 border-t border-cream/50">
+    <div class="max-w-7xl mx-auto px-6">
+        <h2 class="font-display text-3xl text-center text-moss mb-12">Why You'll Love Paskana</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-md border border-cream/50 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="w-16 h-16 bg-leaf/10 text-leaf rounded-full flex items-center justify-center mx-auto mb-4">
+                    <!-- Coffee Mug Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 2.5A2.5 2.5 0 0 1 3.5 0h6A2.5 2.5 0 0 1 12 2.5v8a2.5 2.5 0 0 1-2.5 2.5h-6A2.5 2.5 0 0 1 1 10.5v-8zM3.5 1A1.5 1.5 0 0 0 2 2.5v8A1.5 1.5 0 0 0 3.5 12h6a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 9.5 1h-6z"/>
+                        <path d="M12 4.5h1.5a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5H12V4.5zm1.5 1H12v4h1.5a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
+                    </svg>
+                </div>
+                <h3 class="font-display text-xl text-moss mb-2">Artisan Brewing</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Every cup is carefully crafted by certified baristas using premium, ethically sourced specialty beans.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-md border border-cream/50 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="w-16 h-16 bg-leaf/10 text-leaf rounded-full flex items-center justify-center mx-auto mb-4">
+                    <!-- Cozy Sofa/Wifi Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3 12.44 12.44 0 0 0 .663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z"/>
+                        <path d="M13.229 8.271a.482.482 0 0 0-.063-.745A9.455 9.455 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.577 1.336c.205.132.48.108.652-.065zm-2.183 2.183c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.187 0-2.302.318-3.266.872-.285.165-.326.544-.1.77l.7.7c.155.155.4.155.556 0A4.477 4.477 0 0 1 8 10c1.074 0 2.06.377 2.83 1.008a.393.393 0 0 0 .557 0l.7-.71zM8 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-display text-xl text-moss mb-2">Cozy Ambience</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Unwind in our warm, plant-filled seating areas with comfortable seating and high-speed fiber internet.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-md border border-cream/50 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="w-16 h-16 bg-leaf/10 text-leaf rounded-full flex items-center justify-center mx-auto mb-4">
+                    <!-- Bakery/Croissant Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zM1.5 5.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM4 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </div>
+                <h3 class="font-display text-xl text-moss mb-2">Freshly Baked</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Enjoy our daily selection of house-made pastries, artisan sourdough treats, and gluten-free delights.</p>
+            </div>
+        </div>
+    </div>
+</div>
