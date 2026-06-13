@@ -94,6 +94,10 @@ ng g i core/interfaces/candidato --type=model
 
 ```
 ```bash
+# Pages
+ng g c pages/menu-items --skip-tests
+ng g c pages/home --skip-tests
+
 # Admin
 ng g c features/admin/gestion-usuarios --skip-tests
 ng g c features/admin/edit-usuario --skip-tests
