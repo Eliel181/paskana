@@ -1,44 +1,93 @@
-<section class="bg-cream/40 py-16 border-t border-cream/50 min-h-screen pt-24">
+<section class="bg-[#FCFAF7] py-16 border-t border-cream/80 min-h-screen pt-28">
     <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-            <h2 class="font-display text-4xl text-moss mb-4 text-shadow">Nuestra Variedad de Cafés</h2>
-            <p class="text-text-dark/80 text-lg">
-                Descubre nuestra selección premium de cafés artesanales, preparados por baristas expertos con granos seleccionados.
-            </p>
+        
+        <!-- Header Banner with gradient, latte image, and glassmorphism -->
+        <div class="relative overflow-hidden rounded-3xl mb-12 p-8 md:p-12 bg-gradient-to-r from-moss via-earth to-leaf text-cream shadow-xl border border-moss/20 min-h-[240px] md:min-h-[280px] flex items-center">
+            
+            <!-- Latte image blending into the gradient on the right -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                <!-- Overlay mask that matches the banner background gradient exactly, fading to transparent on the right half -->
+                <div class="absolute inset-0 bg-gradient-to-r from-moss via-earth to-transparent z-10"></div>
+                <img src="/featured_coffee.png" alt="Latte" class="w-full h-full object-cover object-right opacity-25 sm:opacity-55">
+            </div>
+
+            <!-- Decorative background glow circles -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-blossom/10 rounded-full blur-2xl z-0"></div>
+            <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-leaf-light/10 rounded-full blur-2xl z-0"></div>
+            
+            <div class="relative z-20 max-w-2xl">
+                <span class="text-blossom font-bold tracking-widest text-xs uppercase bg-cream/10 px-3 py-1.5 rounded-full backdrop-blur-sm">Paskana Café</span>
+                <h1 class="font-display text-4xl md:text-5xl lg:text-6xl text-cream mt-4 mb-4 text-shadow font-bold leading-tight">Nuestra Carta</h1>
+                <p class="text-cream/90 text-base md:text-lg leading-relaxed">
+                    Descubre una cuidada selección de cafés de especialidad, infusiones, repostería casera, jugos naturales y bocadillos preparados con ingredientes frescos y amor.
+                </p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            @for (coffee of coffees; track coffee.name) {
+        <!-- Categories Carousel -->
+        <div class="mb-10 max-w-4xl mx-auto">
+            <div class="flex overflow-x-auto scrollbar-none py-2 gap-3 justify-start md:justify-center px-4 -mx-4 md:mx-0">
+                @for (category of categories; track category) {
+                    <button 
+                        (click)="selectCategory(category)"
+                        [class]="selectedCategory === category 
+                            ? 'px-6 py-3 bg-gradient-to-r from-leaf to-earth text-cream font-semibold rounded-full shadow-lg shadow-leaf/20 scale-105 shrink-0 transition-all duration-300 cursor-pointer border border-leaf/10' 
+                            : 'px-6 py-3 bg-white hover:bg-[#FDFBF7] text-text-dark/95 border border-cream hover:border-leaf-light/40 hover:text-leaf font-semibold rounded-full shadow-sm hover:shadow transition-all duration-300 shrink-0 cursor-pointer'">
+                        {{ category }}
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Menu Items Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @for (item of filteredItems; track item.name) {
                 <div class="relative max-w-sm mx-auto w-full group">
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 h-full flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-md border border-cream/70 hover:border-blossom/20 transition-all duration-500 hover:shadow-2xl hover:shadow-leaf/5 hover:-translate-y-2 h-full flex flex-col justify-between">
                         <div>
-                            <!-- image -->
-                            <div class="relative overflow-hidden">
-                                <img [src]="coffee.image" [alt]="coffee.name" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105">
-                                @if (coffee.tag) {
-                                    <div class="absolute top-4 right-4 bg-leaf-light text-cream px-3 py-1 rounded-full text-xs font-semibold shadow-md uppercase tracking-wider">
-                                        {{ coffee.tag }}
+                            <!-- image with dynamic scale and hover overlay -->
+                            <div class="relative overflow-hidden aspect-[4/3] bg-[#FAF7F2]">
+                                <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                
+                                <!-- gradient overlay on hover -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-moss/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                                @if (item.tag) {
+                                    <div class="absolute top-4 right-4 bg-gradient-to-r from-blossom to-leaf-light text-cream px-3 py-1.5 rounded-full text-xs font-bold shadow-md uppercase tracking-wider">
+                                        {{ item.tag }}
                                     </div>
                                 }
                             </div>
                             
                             <!-- content -->
                             <div class="p-6">
-                                <h3 class="font-display text-xl text-moss font-bold mb-2">{{ coffee.name }}</h3>
-                                <p class="text-text-dark/80 text-sm leading-relaxed">{{ coffee.description }}</p>
+                                <h3 class="font-display text-xl text-moss font-bold mb-2 group-hover:text-leaf transition-colors duration-300">{{ item.name }}</h3>
+                                <p class="text-text-dark/80 text-sm leading-relaxed line-clamp-3">{{ item.description }}</p>
                             </div>
                         </div>
 
-                        <!-- footer/price -->
-                        <div class="px-6 pb-6 pt-2 flex justify-between items-center">
-                            <span class="font-semibold text-leaf text-xl">{{ coffee.price }}</span>
-                            <button class="px-4 py-2 bg-leaf text-cream text-sm font-semibold rounded-full hover:bg-moss transition-all hover:scale-105 duration-300 shadow cursor-pointer">
-                                Pedir ahora
+                        <!-- footer/price & add button -->
+                        <div class="px-6 pb-6 pt-3 flex justify-between items-center border-t border-cream bg-[#FCFAF7]/40">
+                            <span class="font-bold text-leaf text-2xl tracking-tight">{{ item.price }}</span>
+                            <button class="px-5 py-2.5 bg-gradient-to-r from-leaf to-leaf-light text-cream text-sm font-bold rounded-full hover:from-moss hover:to-leaf transition-all duration-300 hover:scale-105 shadow hover:shadow-md cursor-pointer flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Pedir
                             </button>
                         </div>
                     </div>
+                </div>
+            } @empty {
+                <div class="col-span-full text-center py-20 bg-white/60 backdrop-blur-sm rounded-3xl border border-cream/50 p-8 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-leaf-light mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-moss font-display text-xl mb-2">Próximamente</p>
+                    <p class="text-text-dark/70 text-sm max-w-md mx-auto">Estamos horneando y preparando nuevas delicias. Muy pronto podrás encontrar deliciosas opciones en esta categoría.</p>
                 </div>
             }
         </div>
     </div>
 </section>
+
