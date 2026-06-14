@@ -9,5 +9,13 @@ import { FooterComponent } from "../footer/footer.component";
   styleUrl: './public-layout.component.css'
 })
 export class PublicLayoutComponent {
+  isMobileMenuOpen = false;
 
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
 }
