@@ -2,14 +2,18 @@
 <nav class="bg-white/90 backdrop-blur-sm fixed w-full z-50 border-b border-leaf/20 shadow-sm">
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex justify-between items-center h-20">
-            <a href="#"
+            <a routerLink=""
                 class="font-display text-2xl font-bold tracking-wide text-moss hover:opacity-90 transition-opacity">PASKANA</a>
 
             <div class="hidden md:flex space-x-8 items-center">
-                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Menu</a>
-                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Our Beans</a>
-                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Find Us</a>
-                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Our Story</a>
+                <a routerLink="menu"
+                    class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Menu</a>
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Nuestros
+                    Granos</a>
+                <a href="#"
+                    class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Encuentranos</a>
+                <a href="#" class="text-sm font-semibold text-text-dark hover:text-leaf transition-colors">Nuestra
+                    Historia</a>
                 <a href="#"
                     class="px-5 py-2.5 bg-leaf text-cream rounded-full text-sm font-semibold hover:bg-moss transition-all hover:shadow-md">Order
                     Online</a>
@@ -29,4 +33,4 @@
     <router-outlet />
 </main>
 
-<app-footer></app-footer>
+<app-footer />

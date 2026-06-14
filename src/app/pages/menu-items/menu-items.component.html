@@ -1,1 +1,44 @@
-<p>menu-items works!</p>
+<section class="bg-cream/40 py-16 border-t border-cream/50 min-h-screen pt-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <h2 class="font-display text-4xl text-moss mb-4 text-shadow">Nuestra Variedad de Cafés</h2>
+            <p class="text-text-dark/80 text-lg">
+                Descubre nuestra selección premium de cafés artesanales, preparados por baristas expertos con granos seleccionados.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @for (coffee of coffees; track coffee.name) {
+                <div class="relative max-w-sm mx-auto w-full group">
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 h-full flex flex-col justify-between">
+                        <div>
+                            <!-- image -->
+                            <div class="relative overflow-hidden">
+                                <img [src]="coffee.image" [alt]="coffee.name" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105">
+                                @if (coffee.tag) {
+                                    <div class="absolute top-4 right-4 bg-leaf-light text-cream px-3 py-1 rounded-full text-xs font-semibold shadow-md uppercase tracking-wider">
+                                        {{ coffee.tag }}
+                                    </div>
+                                }
+                            </div>
+                            
+                            <!-- content -->
+                            <div class="p-6">
+                                <h3 class="font-display text-xl text-moss font-bold mb-2">{{ coffee.name }}</h3>
+                                <p class="text-text-dark/80 text-sm leading-relaxed">{{ coffee.description }}</p>
+                            </div>
+                        </div>
+
+                        <!-- footer/price -->
+                        <div class="px-6 pb-6 pt-2 flex justify-between items-center">
+                            <span class="font-semibold text-leaf text-xl">{{ coffee.price }}</span>
+                            <button class="px-4 py-2 bg-leaf text-cream text-sm font-semibold rounded-full hover:bg-moss transition-all hover:scale-105 duration-300 shadow cursor-pointer">
+                                Pedir ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -11,6 +11,9 @@ export const routes: Routes = [
             {
                 path: '', pathMatch: 'full', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
             },
+            {
+                path: 'menu', loadComponent: () => import('./pages/menu-items/menu-items.component').then(m => m.MenuItemsComponent)
+            }
         ]
     }
 ];
