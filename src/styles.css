@@ -58,7 +58,13 @@
         url('/bg-cafeteria.jpg');
     background-position: center;
     background-size: cover;
-    background-attachment: fixed;
+    background-attachment: scroll;
+}
+
+@media (min-width: 1024px) {
+    .hero-bg {
+        background-attachment: fixed;
+    }
 }
 
 .text-shadow {
