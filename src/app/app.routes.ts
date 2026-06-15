@@ -13,6 +13,9 @@ export const routes: Routes = [
             },
             {
                 path: 'menu', loadComponent: () => import('./pages/menu-items/menu-items.component').then(m => m.MenuItemsComponent)
+            },
+            {
+                path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
             }
         ]
     }
