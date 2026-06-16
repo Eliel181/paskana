@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component';
 import { HomeComponent } from './pages/home/home.component';
+import { PrivateLayoutComponent } from './layout/private-layout/private-layout.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full' },
@@ -18,5 +19,9 @@ export const routes: Routes = [
                 path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
             }
         ]
+    },
+    {
+        path: 'administracion',
+        component: PrivateLayoutComponent,
     }
 ];
