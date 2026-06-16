@@ -85,13 +85,10 @@ ng g guard core/guards/public --skip-tests
 ```bash
 # Interfaces
 ng g i core/interfaces/usuario --type=model
-ng g i core/interfaces/escuela --type=model
+ng g i core/interfaces/producto --type=model
 ng g i core/interfaces/tarea --type=model
 ng g i core/interfaces/activityFeed --type=model
-ng g i core/interfaces/eleccion --type=model
-ng g i core/interfaces/candidato --type=model
  
-
 ```
 ```bash
 # Pages
