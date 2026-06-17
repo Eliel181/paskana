@@ -23,5 +23,16 @@ export const routes: Routes = [
     {
         path: 'administracion',
         component: PrivateLayoutComponent,
+        children: [
+            {
+                path: 'productos', loadComponent: () => import('./features/product/list-products/list-products.component').then(m => m.ListProductsComponent)
+            },
+            {
+                path: 'producto', loadComponent: () => import('./features/product/form-product/form-product.component').then(m => m.FormProductComponent)
+            },
+            {
+                path: 'producto/:id', loadComponent: () => import('./features/product/form-product/form-product.component').then(m => m.FormProductComponent)
+            },
+        ]
     }
 ];

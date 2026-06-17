@@ -25,6 +25,7 @@ export interface Producto {
     precio: number;
     imagen: ImagenProducto;
     disponible: boolean;
+    destacado: boolean;
     stock?: number;
     fechaCreacion: Date;
     fechaActualizacion?: Date;
