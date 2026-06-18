@@ -107,8 +107,6 @@ ng g component features/tasks/edit-tarea --skip-tests
 ng g component features/employee/mis-tareas --skip-tests
 ng g component features/employee/detalle-tarea --skip-tests
 
-
-
 #Referents
 ng g c features/referents/calendario --skip-tests
 

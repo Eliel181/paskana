@@ -1,1 +1,177 @@
-<p>form-product works!</p>
+<section class="py-6 flex items-center justify-center">
+  <div
+    class="bg-white rounded-3xl overflow-hidden shadow-2xl border border-cream/70 max-w-2xl w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 card-shadow relative">
+    <!-- Decor blur circles -->
+    <div class="absolute -right-24 -top-24 w-64 h-64 bg-blossom/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-24 -bottom-24 w-64 h-64 bg-leaf-light/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 w-full mx-auto space-y-6">
+      <div class="space-y-1">
+        <h3 class="font-display text-2xl font-bold text-moss tracking-tight">
+          {{ isEditMode ? 'Actualizar Información' : 'Registrar Producto' }}
+        </h3>
+        <p class="text-text-dark/80 text-xs">Asegúrate de llenar los campos obligatorios marcados para evitar
+          inconsistencias.</p>
+      </div>
+
+      <!-- Form Component -->
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <!-- Image input AS preview -->
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Imagen del Producto *</label>
+          <input
+            type="file"
+            id="imagenInput"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            class="hidden"
+          />
+          <label
+            for="imagenInput"
+            class="group relative block w-full rounded-2xl overflow-hidden cursor-pointer border-2 transition-all duration-300"
+            [class.border-cream]="!imagePreviewUrl"
+            [class.border-leaf-light]="!!imagePreviewUrl"
+            [class.border-dashed]="!imagePreviewUrl"
+            [class.border-red-400]="productForm.get('imagenUrl')?.touched && productForm.get('imagenUrl')?.invalid"
+          >
+            <!-- Placeholder state: no image selected -->
+            @if (!imagePreviewUrl) {
+              <div class="flex flex-col items-center justify-center gap-2 py-10 bg-cream/50 hover:bg-cream transition-colors duration-300">
+                <div class="w-12 h-12 rounded-full bg-leaf/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-leaf" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                </div>
+                <p class="text-sm font-semibold text-text-dark/60">Haz clic para seleccionar una imagen</p>
+                <p class="text-[10px] text-text-dark/40">PNG, JPG, WEBP — max. 5 MB</p>
+              </div>
+            }
+
+            <!-- Preview state: image selected -->
+            @if (imagePreviewUrl) {
+              <div class="relative">
+                <img
+                  [src]="imagePreviewUrl"
+                  alt="Vista previa del producto"
+                  class="w-full h-52 object-cover transition-all duration-300"
+                />
+                <!-- Hover overlay to change image -->
+                <div class="absolute inset-0 bg-moss/0 group-hover:bg-moss/50 flex items-center justify-center gap-2 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cream" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                  </svg>
+                  <span class="text-cream text-sm font-bold">Cambiar imagen</span>
+                </div>
+                <!-- File name badge -->
+                <div class="absolute bottom-0 left-0 right-0 px-3 py-1.5 bg-gradient-to-t from-moss/80 to-transparent">
+                  <p class="text-cream text-[10px] font-semibold truncate">{{ selectedFileName }}</p>
+                </div>
+              </div>
+            }
+          </label>
+          @if (productForm.get('imagenUrl')?.touched && productForm.get('imagenUrl')?.errors?.['required']) {
+            <p class="text-[11px] text-red-500 font-semibold mt-0.5">La imagen del producto es obligatoria.</p>
+          }
+        </div>
+
+        <!-- Name field -->
+        <div class="space-y-1">
+          <label for="nombre" class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Nombre del
+            Producto *</label>
+          <input type="text" id="nombre" formControlName="nombre" placeholder="Ej. Capuchino con Canela"
+            class="w-full px-4 py-2.5 bg-cream border border-cream/90 hover:border-leaf-light/55 focus:border-leaf focus:bg-white text-text-dark rounded-2xl outline-none transition-all duration-300 shadow-sm text-sm"
+            [class.border-red-500]="productForm.get('nombre')?.touched && productForm.get('nombre')?.invalid" />
+          @if (productForm.get('nombre')?.touched && productForm.get('nombre')?.errors?.['required']) {
+          <p class="text-[11px] text-red-500 font-semibold mt-0.5">El nombre es obligatorio.</p>
+          }
+          @if (productForm.get('nombre')?.touched && productForm.get('nombre')?.errors?.['minlength']) {
+          <p class="text-[11px] text-red-500 font-semibold mt-0.5">El nombre debe tener al menos 3 caracteres.</p>
+          }
+        </div>
+
+        <!-- Description field -->
+        <div class="space-y-1">
+          <label for="descripcion"
+            class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Descripción</label>
+          <textarea id="descripcion" formControlName="descripcion"
+            placeholder="Breve descripción de los ingredientes o preparación..." rows="2"
+            class="w-full px-4 py-2.5 bg-cream border border-cream/90 hover:border-leaf-light/55 focus:border-leaf focus:bg-white text-text-dark rounded-2xl outline-none transition-all duration-300 shadow-sm text-sm resize-none"></textarea>
+        </div>
+
+        <!-- Category + Price row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Category dropdown -->
+          <div class="space-y-1 sm:col-span-1">
+            <label for="categoria" class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Categoría
+              *</label>
+            <select id="categoria" formControlName="categoria"
+              class="w-full px-4 py-2.5 bg-cream border border-cream/90 hover:border-leaf-light/55 focus:border-leaf focus:bg-white text-text-dark rounded-2xl outline-none transition-all duration-300 shadow-sm text-sm appearance-none cursor-pointer">
+              @for (cat of categories; track cat.value) {
+              <option [value]="cat.value">{{ cat.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Price field -->
+          <div class="space-y-1">
+            <label for="precio" class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Precio ($)
+              *</label>
+            <input type="number" id="precio" formControlName="precio" placeholder="0"
+              class="w-full px-4 py-2.5 bg-cream border border-cream/90 hover:border-leaf-light/55 focus:border-leaf focus:bg-white text-text-dark rounded-2xl outline-none transition-all duration-300 shadow-sm text-sm"
+              [class.border-red-500]="productForm.get('precio')?.touched && productForm.get('precio')?.invalid" />
+            @if (productForm.get('precio')?.touched && productForm.get('precio')?.errors?.['required']) {
+            <p class="text-[11px] text-red-500 font-semibold mt-0.5">El precio es obligatorio.</p>
+            }
+            @if (productForm.get('precio')?.touched && productForm.get('precio')?.errors?.['min']) {
+            <p class="text-[11px] text-red-500 font-semibold mt-0.5">El precio no puede ser menor a 0.</p>
+            }
+          </div>
+
+          <!-- Stock field -->
+          <div class="space-y-1">
+            <label for="stock" class="text-[10px] font-bold uppercase tracking-wider text-text-dark/80">Stock Inicial
+              *</label>
+            <input type="number" id="stock" formControlName="stock" placeholder="0"
+              class="w-full px-4 py-2.5 bg-cream border border-cream/90 hover:border-leaf-light/55 focus:border-leaf focus:bg-white text-text-dark rounded-2xl outline-none transition-all duration-300 shadow-sm text-sm"
+              [class.border-red-500]="productForm.get('stock')?.touched && productForm.get('stock')?.invalid" />
+            @if (productForm.get('stock')?.touched && productForm.get('stock')?.errors?.['required']) {
+            <p class="text-[11px] text-red-500 font-semibold mt-0.5">El stock es obligatorio.</p>
+            }
+            @if (productForm.get('stock')?.touched && productForm.get('stock')?.errors?.['min']) {
+            <p class="text-[11px] text-red-500 font-semibold mt-0.5">El stock no puede ser menor a 0.</p>
+            }
+          </div>
+        </div>
+
+        <!-- Switches (Disponible y Destacado) -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2">
+          <label class="flex items-center gap-2.5 cursor-pointer select-none">
+            <input type="checkbox" formControlName="disponible"
+              class="accent-leaf h-4.5 w-4.5 rounded border-cream text-leaf focus:ring-leaf cursor-pointer" />
+            <span class="text-xs text-text-dark/80 font-bold uppercase tracking-wider">Producto Disponible</span>
+          </label>
+
+          <label class="flex items-center gap-2.5 cursor-pointer select-none">
+            <input type="checkbox" formControlName="destacado"
+              class="accent-leaf h-4.5 w-4.5 rounded border-cream text-leaf focus:ring-leaf cursor-pointer" />
+            <span class="text-xs text-text-dark/80 font-bold uppercase tracking-wider">Destacar Producto</span>
+          </label>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 pt-3">
+          <button type="submit" [disabled]="productForm.invalid"
+            class="w-full sm:flex-1 py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf disabled:from-cream/60 disabled:to-cream/40 disabled:text-text-dark/40 disabled:cursor-not-allowed text-cream font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer text-sm">
+            {{ isEditMode ? 'Guardar Cambios' : 'Añadir Producto' }}
+          </button>
+          <a routerLink="/administracion/productos"
+            class="w-full sm:w-auto text-center py-3 px-6 bg-white hover:bg-cream border border-cream/80 hover:border-leaf-light/35 text-text-dark font-bold rounded-2xl shadow-sm transition-all duration-300 text-sm cursor-pointer">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>

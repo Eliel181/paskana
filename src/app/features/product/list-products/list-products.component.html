@@ -1,1 +1,152 @@
-<p>list-products works!</p>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold font-display text-moss">Productos</h1>
+      <p class="text-text-dark/70 text-sm mt-1">Administra el catálogo de productos, disponibilidad y destacados.</p>
+    </div>
+    <div>
+      <a routerLink="/administracion/producto"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-leaf hover:bg-moss text-cream px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Nuevo Producto</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Category Filter Carousel -->
+  <div class="relative py-2">
+    <div class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-4 -mx-4">
+      @for (cat of categories; track cat.value) {
+      <button (click)="selectCategory(cat.value)" [class]="selectedCategory === cat.value 
+            ? 'bg-leaf text-cream shadow-md scale-102 border-leaf' 
+            : 'bg-white text-moss hover:bg-cream/50 border-cream/80'"
+        class="flex-shrink-0 px-5 py-2.5 rounded-full border text-sm font-medium transition-all duration-200 cursor-pointer select-none">
+        <span>{{ cat.label }}</span>
+      </button>
+      }
+    </div>
+  </div>
+  <!-- Products Table Container -->
+  @if (filteredProducts.length > 0) {
+  <div class="bg-white rounded-2xl border border-cream/50 overflow-hidden card-shadow">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-cream/40 border-b border-cream/80 text-moss font-semibold text-xs uppercase tracking-wider">
+            <th class="py-4 px-6">Producto</th>
+            <th class="py-4 px-6">Categoría</th>
+            <th class="py-4 px-6">Precio</th>
+            <th class="py-4 px-6">Stock</th>
+            <th class="py-4 px-6">Estado</th>
+            <th class="py-4 px-6 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-cream/40 text-text-dark">
+          @for (product of filteredProducts; track product.id) {
+          <tr class="hover:bg-cream/10 transition-colors duration-150">
+            <!-- Product Image & Name -->
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl overflow-hidden bg-cream flex-shrink-0 border border-cream/30">
+                  <img [src]="product.imagen.secure_url" [alt]="product.nombre" class="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <div class="font-bold text-moss text-sm flex items-center gap-2">
+                    {{ product.nombre }}
+                    @if (product.destacado) {
+                    <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded bg-blossom/20 text-earth">
+                      Destacado
+                    </span>
+                    }
+                  </div>
+                  <div class="text-xs text-text-dark/60 max-w-xs truncate" [title]="product.descripcion">
+                    {{ product.descripcion || 'Sin descripción disponible.' }}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Category Badge -->
+            <td class="py-4 px-6">
+              <span
+                class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md bg-cream text-moss border border-cream/60">
+                {{ product.categoria }}
+              </span>
+            </td>
+
+            <!-- Price -->
+            <td class="py-4 px-6">
+              <span class="font-bold text-sm text-moss">
+                ${{ product.precio | number:'1.0-0' }}
+              </span>
+            </td>
+
+            <!-- Stock -->
+            <td class="py-4 px-6">
+              <span class="text-xs font-semibold"
+                [class]="(product.stock ?? 0) > 10 ? 'text-text-dark/80' : 'text-amber-600'">
+                {{ product.stock ?? 'N/A' }} u.
+              </span>
+            </td>
+
+            <!-- Availability status & Quick Switch -->
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold flex items-center gap-1.5"
+                  [class]="product.disponible ? 'text-green-600' : 'text-red-500'">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                  {{ product.disponible ? 'Disponible' : 'No disponible' }}
+                </span>
+                <button (click)="toggleDisponibilidad(product)"
+                  [class]="product.disponible ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-red-50 text-red-700 hover:bg-red-100'"
+                  class="px-2 py-0.5 text-[9px] font-bold uppercase rounded transition-colors duration-150 cursor-pointer">
+                  Cambiar
+                </button>
+              </div>
+            </td>
+
+            <!-- Action Buttons -->
+            <td class="py-4 px-6 text-right">
+              <div class="inline-flex items-center gap-2">
+                <a [routerLink]="['/administracion/producto', product.id]" title="Editar"
+                  class="p-2 bg-cream/30 text-moss hover:bg-cream hover:text-leaf rounded-lg transition-colors duration-150 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </a>
+                <button (click)="eliminarProducto(product.id)" title="Eliminar"
+                  class="p-2 bg-red-50/20 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  } @else {
+  <!-- Empty State -->
+  <div class="bg-white border border-cream/50 rounded-2xl p-12 text-center card-shadow max-w-md mx-auto my-8">
+    <div class="text-moss/40 flex justify-center mb-4">
+      <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-moss font-display">No se encontraron productos</h3>
+    <p class="text-text-dark/70 text-sm mt-1">Prueba seleccionando otra categoría o crea un nuevo producto.</p>
+    <button (click)="selectCategory(null)"
+      class="mt-6 inline-flex items-center gap-2 bg-leaf hover:bg-moss text-cream px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200 cursor-pointer">
+      Ver Todos
+    </button>
+  </div>
+  }
+</div>
