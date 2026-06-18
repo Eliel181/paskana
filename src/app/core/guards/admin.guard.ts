@@ -10,12 +10,15 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const router: Router = inject(Router);
 
   return toObservable(authService.isAuthStatusLoaded).pipe(
-    filter(loaded => loaded === true), // Espera a que Firebase cargue
+    filter(loaded => loaded === true),
     take(1),
     map(() => {
       const user = authService.currentUser();
-      if (user && user.emailVerified) {
+      if (user && user.rol === 'Admin') {
         return true;
+      } else if (user) {
+        router.navigate(['/administracion']);
+        return false;
       } else {
         router.navigate(['/login']);
         return false;
