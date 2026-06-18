@@ -1,8 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CategoriaProducto, Producto } from '../../../core/interfaces/producto.model';
+import { CategoriaProducto, ImagenProducto, Producto } from '../../../core/interfaces/producto.model';
 import { FirestoreService } from '../../../core/services/firestore.service';
+import { CloudinaryService } from '../../../core/services/cloudinary.service';
 
 @Component({
   selector: 'app-form-product',
@@ -14,11 +15,18 @@ export class FormProductComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private firestoreService: FirestoreService = inject(FirestoreService);
+  private firestoreService = inject(FirestoreService);
+  private cloudinaryService = inject(CloudinaryService);
 
   productForm!: FormGroup;
   isEditMode = false;
   productId: string | null = null;
+
+  // Estado de carga para feedback visual
+  isUploading = false;
+
+  // Imagen existente (en modo edición, cuando no se selecciona un archivo nuevo)
+  private existingImage: ImagenProducto | null = null;
 
   // Lista de categorías para el dropdown
   categories: { label: string; value: CategoriaProducto }[] = [
@@ -34,22 +42,6 @@ export class FormProductComponent implements OnInit {
     { label: 'Tortas', value: 'torta' },
     { label: 'Desayunos', value: 'desayuno' },
     { label: 'Meriendas', value: 'merienda' }
-  ];
-
-  // Mock list to load initial data if editing
-  private mockProducts: Producto[] = [
-    {
-      id: '1',
-      nombre: 'Café Latte Especial',
-      descripcion: 'Espresso con leche cremosa vaporizada y una suave capa de espuma, decorado con arte latte.',
-      categoria: 'cafe',
-      precio: 2200,
-      imagen: { public_id: 'featured_coffee', secure_url: '/featured_coffee.png' },
-      disponible: true,
-      destacado: true,
-      stock: 45,
-      fechaCreacion: new Date('2026-01-15')
-    }
   ];
 
   selectedFileName = '';
@@ -68,7 +60,8 @@ export class FormProductComponent implements OnInit {
       categoria: ['cafe', [Validators.required]],
       precio: [null, [Validators.required, Validators.min(0)]],
       stock: [0, [Validators.required, Validators.min(0)]],
-      imagenUrl: ['', [Validators.required]],
+      // Control auxiliar para la validación de imagen: required si no hay imagen existente
+      imagenControl: ['', [Validators.required]],
       disponible: [true],
       destacado: [false]
     });
@@ -92,15 +85,18 @@ export class FormProductComponent implements OnInit {
           categoria: product.categoria,
           precio: product.precio,
           stock: product.stock ?? 0,
-          imagenUrl: product.imagen?.secure_url || '',
           disponible: product.disponible,
           destacado: product.destacado
         });
-        
+
         if (product.imagen?.secure_url) {
+          this.existingImage = product.imagen;
+          this.imagePreviewUrl = product.imagen.secure_url;
           const parts = product.imagen.secure_url.split('/');
           this.selectedFileName = parts[parts.length - 1];
-          this.imagePreviewUrl = product.imagen.secure_url;
+          // En edición, la imagen ya existe, el control no necesita ser requerido
+          this.productForm.get('imagenControl')?.clearValidators();
+          this.productForm.get('imagenControl')?.updateValueAndValidity();
         }
       }
     } catch (err) {
@@ -113,19 +109,16 @@ export class FormProductComponent implements OnInit {
     if (file) {
       this.selectedFile = file;
       this.selectedFileName = file.name;
-      
-      // Leer el archivo para generar la previsualización local en el navegador
+
+      // Preview local instantánea con FileReader
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreviewUrl = reader.result as string;
       };
       reader.readAsDataURL(file);
 
-      // Dado que no hay servicio de subida de imágenes real en el frontend para el mock,
-      // actualizamos el control del formulario con un nombre representativo para pasar la validación
-      this.productForm.patchValue({
-        imagenUrl: `/assets/images/${file.name}`
-      });
+      // Marcar el control como válido ya que hay un archivo seleccionado
+      this.productForm.patchValue({ imagenControl: file.name });
     }
   }
 
@@ -135,36 +128,52 @@ export class FormProductComponent implements OnInit {
       return;
     }
 
-    const { nombre, descripcion, categoria, precio, stock, imagenUrl, disponible, destacado } = this.productForm.value;
-
-    const productPayload: any = {
-      nombre,
-      descripcion,
-      categoria,
-      precio,
-      stock,
-      imagen: {
-        public_id: this.productId || 'new_product_' + Date.now(),
-        secure_url: imagenUrl
-      },
-      disponible,
-      destacado,
-      fechaActualizacion: new Date()
-    };
+    this.isUploading = true;
 
     try {
+      // Determinar la imagen final a guardar en Firestore
+      let imagenFinal: ImagenProducto;
+
+      if (this.selectedFile) {
+        // Hay un archivo nuevo: subir a Cloudinary y obtener la URL real
+        imagenFinal = await this.cloudinaryService.uploadImage(this.selectedFile);
+      } else if (this.existingImage) {
+        // Modo edición sin nuevo archivo: reusar la imagen ya guardada
+        imagenFinal = this.existingImage;
+      } else {
+        console.error('No hay imagen seleccionada.');
+        this.isUploading = false;
+        return;
+      }
+
+      const { nombre, descripcion, categoria, precio, stock, disponible, destacado } = this.productForm.value;
+
+      const productPayload = {
+        nombre,
+        descripcion,
+        categoria,
+        precio,
+        stock,
+        imagen: imagenFinal,
+        disponible,
+        destacado,
+        fechaActualizacion: new Date()
+      };
+
       if (this.isEditMode && this.productId) {
         await this.firestoreService.updateDocument<Producto>('productos', this.productId, productPayload);
-        console.log('Producto actualizado con éxito en Firestore');
       } else {
-        productPayload.fechaCreacion = new Date();
-        await this.firestoreService.addDocument('productos', productPayload);
-        console.log('Producto creado con éxito en Firestore');
+        await this.firestoreService.addDocument('productos', {
+          ...productPayload,
+          fechaCreacion: new Date()
+        });
       }
+
       this.router.navigate(['/administracion/productos']);
     } catch (err) {
-      console.error('Error al guardar el producto en Firestore:', err);
+      console.error('Error al guardar el producto:', err);
+    } finally {
+      this.isUploading = false;
     }
   }
 }
-

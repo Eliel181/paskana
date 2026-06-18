@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ImagenProducto } from '../interfaces/producto.model';
 import { lastValueFrom, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,8 @@ import { lastValueFrom, map } from 'rxjs';
 export class CloudinaryService {
   private http: HttpClient = inject(HttpClient);
 
-  private cloudName = 'mrpotato';
-  private uploadPreset = 'mr_myupload';
+  private cloudName = environment.cloudinary.cloudName;
+  private uploadPreset = environment.cloudinary.uploadPreset;
   private cloudinaryUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
 
 

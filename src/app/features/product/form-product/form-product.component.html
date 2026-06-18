@@ -33,7 +33,7 @@
             [class.border-cream]="!imagePreviewUrl"
             [class.border-leaf-light]="!!imagePreviewUrl"
             [class.border-dashed]="!imagePreviewUrl"
-            [class.border-red-400]="productForm.get('imagenUrl')?.touched && productForm.get('imagenUrl')?.invalid"
+            [class.border-red-400]="productForm.get('imagenControl')?.touched && productForm.get('imagenControl')?.invalid"
           >
             <!-- Placeholder state: no image selected -->
             @if (!imagePreviewUrl) {
@@ -70,7 +70,7 @@
               </div>
             }
           </label>
-          @if (productForm.get('imagenUrl')?.touched && productForm.get('imagenUrl')?.errors?.['required']) {
+          @if (productForm.get('imagenControl')?.touched && productForm.get('imagenControl')?.errors?.['required']) {
             <p class="text-[11px] text-red-500 font-semibold mt-0.5">La imagen del producto es obligatoria.</p>
           }
         </div>
@@ -161,9 +161,17 @@
 
         <!-- Action buttons -->
         <div class="flex flex-col sm:flex-row items-center gap-3 pt-3">
-          <button type="submit" [disabled]="productForm.invalid"
-            class="w-full sm:flex-1 py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf disabled:from-cream/60 disabled:to-cream/40 disabled:text-text-dark/40 disabled:cursor-not-allowed text-cream font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer text-sm">
-            {{ isEditMode ? 'Guardar Cambios' : 'Añadir Producto' }}
+          <button type="submit" [disabled]="productForm.invalid || isUploading"
+            class="w-full sm:flex-1 py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf disabled:from-cream/60 disabled:to-cream/40 disabled:text-text-dark/40 disabled:cursor-not-allowed text-cream font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer text-sm flex items-center justify-center gap-2">
+            @if (isUploading) {
+              <svg class="animate-spin h-4 w-4 text-cream" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Subiendo imagen...
+            } @else {
+              {{ isEditMode ? 'Guardar Cambios' : 'Añadir Producto' }}
+            }
           </button>
           <a routerLink="/administracion/productos"
             class="w-full sm:w-auto text-center py-3 px-6 bg-white hover:bg-cream border border-cream/80 hover:border-leaf-light/35 text-text-dark font-bold rounded-2xl shadow-sm transition-all duration-300 text-sm cursor-pointer">
