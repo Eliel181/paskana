@@ -140,10 +140,4 @@ ng g c shared/spinner-overlay --skip-tests
 # Dashboards
 ng g c dashboards/dashboard-admin/dashboard --skip-tests
 ng g c dashboards/dashboard-admin/grafico-usuarios --skip-tests
-
-# Para Votacion
-ng g c votacion/carrusel-elecciones/presentacion-postulantes --skip-tests
-
-# Para la lista de elecciones
-ng g c votacion/lista-elecciones/lista-elecciones --skip-tests
 ```
