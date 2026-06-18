@@ -43,9 +43,8 @@ Instalación de Dependencias:
 # Descargar Tailwind
 npm install tailwindcss @tailwindcss/postcss postcss --force
 
-# Descargar Sweet Alert 2
-npm install sweetalert2 
-
+# Descargar Lottie Files
+npm install lottie-web@^5.10.0 ngx-lottie@^13.0.1
 
 ```
 **Nota:**  Crear un archivo en la raiz ".postcssrc.json" y pega el siguiente código
