@@ -1,1 +1,5 @@
+@if (!isAuthLoading()) {
+<app-spinner-overlay />
+} @else {
 <router-outlet />
+}
