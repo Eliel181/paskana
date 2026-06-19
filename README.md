@@ -94,9 +94,8 @@ ng g c pages/home --skip-tests
 ng g c features/admin/gestion-usuarios --skip-tests
 ng g c features/admin/edit-usuario --skip-tests
 
-# Schools
-ng g c features/schools/school-list --skip-tests
-ng g c features/schools/school-management --skip-tests
+# Orders
+ng g c features/orders/order --skip-tests
 
 # Tasks
 ng g component features/tasks/gestion-tareas --skip-tests
