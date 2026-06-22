@@ -80,7 +80,7 @@
             <!-- Price -->
             <td class="py-4 px-6">
               <span class="font-bold text-sm text-moss">
-                ${{ product.precio | number:'1.0-0' }}
+                {{ formatPrice(product.precio) }}
               </span>
             </td>
 

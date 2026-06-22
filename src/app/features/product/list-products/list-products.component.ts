@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CategoriaProducto, Producto } from '../../../core/interfaces/producto.model';
-import { DecimalPipe } from "@angular/common"
 import { RouterModule } from '@angular/router';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list-products',
-  imports: [DecimalPipe, RouterModule],
+  imports: [RouterModule],
   templateUrl: './list-products.component.html',
   styleUrl: './list-products.component.css'
 })
@@ -62,6 +61,11 @@ export class ListProductsComponent implements OnInit, OnDestroy {
   // Cambiar categoría seleccionada
   selectCategory(category: CategoriaProducto | null): void {
     this.selectedCategory = category;
+  }
+
+  formatPrice(price: any): string {
+    const num = Number(price);
+    return isNaN(num) ? '$0' : `$${num.toLocaleString('es-AR')}`;
   }
 
   // Toggle de disponibilidad real en Firestore
