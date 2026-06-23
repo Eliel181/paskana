@@ -34,6 +34,9 @@ export const routes: Routes = [
                 path: 'producto/:id', loadComponent: () => import('./features/product/form-product/form-product.component').then(m => m.FormProductComponent)
             },
             {
+                path: 'pedidos', loadComponent: () => import('./features/orders/all-orders/all-orders.component').then(m => m.AllOrdersComponent)
+            },
+            {
                 path: 'pedido', loadComponent: () => import('./features/orders/order/order.component').then(m => m.OrderComponent)
             }
         ]

@@ -1,6 +1,6 @@
 # Bitácora de Pedido - Paskana
 
-Esta bitácora documenta el flujo completo paso a paso para la gestión y almacenamiento de pedidos en la aplicación, sirviendo como guía de contexto para el funcionamiento actual y futuros desarrollos.
+Esta bitácora documenta el flujo completo paso a paso para la gestión, almacenamiento y visualización de pedidos en la aplicación, sirviendo como guía de contexto para el funcionamiento actual y futuros desarrollos.
 
 ---
 
@@ -62,7 +62,28 @@ El proceso de creación de un pedido consta de 6 fases dentro del componente `Or
 
 ---
 
-## 2. Definición de Estructuras e Interfaces Utilizadas
+## 3. Visualización y Control de Pedidos del Día
+
+La visualización de las comandas activas y el historial de ventas del día se administra a través del componente `AllOrdersComponent` (`/administracion/pedidos`), el cual se organiza mediante pestañas:
+
+### A. Pestaña "Pedidos" (General)
+- Muestra una sección de estadísticas en tiempo real con 3 métricas:
+  1. **Ventas de Hoy**: Sumatoria total de los pedidos completados y pendientes (excluyendo cancelados).
+  2. **Pedidos Activos**: Cantidad total de comandas en estados `'pendiente'`, `'en_preparacion'` o `'listo'`.
+  3. **Listos para Despacho**: Cantidad de pedidos listos que están pendientes de ser entregados al cliente.
+- Lista todos los pedidos de la colección `pedidos` en Firestore que correspondan a la fecha del día actual (`isToday`).
+- Los pedidos se visualizan en formato de tarjeta estructurada, ordenados cronológicamente de más reciente a más antiguo, mostrando items, precio unitario, método de pago, mesa, cajero/mozo que registró y estado de pago (`estaPagado`).
+
+### B. Pestaña "Mis Pedidos" (Personal)
+- Al ser seleccionada, renderiza el componente secundario `<app-my-orders>`.
+- Este componente consulta la colección `pedidos` y filtra automáticamente por:
+  1. El `uid` del usuario actualmente logueado (`usuarioId === currentUser.uid`).
+  2. La fecha actual (únicamente pedidos creados hoy).
+- Muestra las tarjetas de comanda asociadas directamente a las ventas o atenciones del empleado en su turno activo.
+
+---
+
+## 4. Definición de Estructuras e Interfaces Utilizadas
 
 ### Pedido (`pedido.model.ts`)
 ```typescript
