@@ -101,6 +101,8 @@ ng g c features/admin/edit-usuario --skip-tests
 
 # Orders
 ng g c features/orders/order --skip-tests
+ng g c features/orders/all-orders --skip-tests
+ng g c features/orders/my-orders --skip-tests
 
 # Tasks
 ng g component features/tasks/gestion-tareas --skip-tests
