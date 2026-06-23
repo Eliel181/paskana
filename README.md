@@ -81,6 +81,7 @@ ng g guard core/guards/public --skip-tests
 # Interfaces
 ng g i core/interfaces/usuario --type=model
 ng g i core/interfaces/producto --type=model
+ng g i core/interfaces/pedido --type=model
 ng g i core/interfaces/tarea --type=model
 ng g i core/interfaces/activityFeed --type=model
  
