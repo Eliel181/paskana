@@ -46,6 +46,9 @@ npm install tailwindcss @tailwindcss/postcss postcss --force
 # Descargar Lottie Files
 npm install lottie-web@^5.10.0 ngx-lottie@^13.0.1
 
+# Generar Pdf's 
+npm install pdfmake@^0.2.20
+
 ```
 **Nota:**  Crear un archivo en la raiz ".postcssrc.json" y pega el siguiente código
 ```
@@ -67,6 +70,7 @@ ng g s core/services/firestore --skip-tests
 ng g s core/services/auth --skip-tests
 ng g s core/services/activityFeed  --skip-tests
 ng g s core/services/cloudinary  --skip-tests
+ng g s core/services/pdf-make --skip-tests
 ```
 
 ```bash
