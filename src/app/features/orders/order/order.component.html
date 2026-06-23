@@ -22,30 +22,38 @@
 
             <!-- Order type toggle -->
             <div class="flex bg-cream p-1 rounded-xl border border-cream/80 shrink-0 self-start sm:self-auto">
-                <button class="px-4 py-1.5 bg-white text-moss text-xs font-bold rounded-lg shadow-sm transition-all">
+                <button 
+                    (click)="isDelivery = false"
+                    [class]="!isDelivery ? 'bg-white text-moss shadow-sm font-bold' : 'text-text-dark/60 hover:text-moss font-semibold'"
+                    class="px-4 py-1.5 text-xs rounded-lg transition-all cursor-pointer">
                     En Mesa
                 </button>
-                <button
-                    class="px-4 py-1.5 text-text-dark/60 hover:text-moss text-xs font-semibold rounded-lg transition-all">
+                <button 
+                    (click)="isDelivery = true"
+                    [class]="isDelivery ? 'bg-white text-moss shadow-sm font-bold' : 'text-text-dark/60 hover:text-moss font-semibold'"
+                    class="px-4 py-1.5 text-xs rounded-lg transition-all cursor-pointer">
                     Para Llevar
                 </button>
             </div>
         </div>
 
         <!-- Table Selection -->
+        @if (!isDelivery) {
         <div class="flex items-center gap-3 px-4 md:px-6 py-3 border-b border-cream/50 bg-white/50">
             <span class="text-[10px] font-bold uppercase tracking-wider text-text-dark/50">Mesa:</span>
             <div class="flex gap-1.5">
                 @for (n of [1,2,3,4,5,6,7,8]; track n) {
                 <button
-                    [class]="n === 1
-                        ? 'w-8 h-8 rounded-lg text-xs font-bold bg-gradient-to-br from-leaf to-earth text-cream shadow-sm'
-                        : 'w-8 h-8 rounded-lg text-xs font-semibold border border-cream/80 text-text-dark/60 hover:border-leaf/40 hover:text-leaf hover:bg-leaf/5 transition-all'">
+                    (click)="selectedTable = n"
+                    [class]="n === selectedTable
+                        ? 'w-8 h-8 rounded-lg text-xs font-bold bg-gradient-to-br from-leaf to-earth text-cream shadow-sm cursor-pointer'
+                        : 'w-8 h-8 rounded-lg text-xs font-semibold border border-cream/80 text-text-dark/60 hover:border-leaf/40 hover:text-leaf hover:bg-leaf/5 transition-all cursor-pointer'">
                     {{ n }}
                 </button>
                 }
             </div>
         </div>
+        }
 
         <!-- Product Grid -->
         <div class="flex-1 overflow-y-auto p-4 md:p-6">
@@ -123,24 +131,44 @@
                 <h2 class="font-display text-lg font-bold text-moss">Pedido Actual</h2>
                 <span
                     class="bg-gradient-to-r from-leaf to-earth text-cream text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                    Mesa 1
+                    @if (isDelivery) { Para Llevar } @else { Mesa {{ selectedTable }} }
                 </span>
             </div>
-            <p class="text-text-dark/45 text-[11px]">Orden #2405-A10</p>
+            <p class="text-text-dark/45 text-[11px]">Orden #{{ orderNumber }}</p>
         </div>
 
         <!-- Cart Items -->
         <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-            <!-- Empty state -->
-            <div class="h-full flex flex-col items-center justify-center py-10 opacity-40">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-moss mb-3" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="1">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <p class="text-text-dark/60 text-sm font-semibold">Carrito vacio</p>
-                <p class="text-text-dark/40 text-xs mt-1">Agrega productos al pedido</p>
-            </div>
+            @if (cartItems.length === 0) {
+                <!-- Empty state -->
+                <div class="h-full flex flex-col items-center justify-center py-10 opacity-40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-moss mb-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p class="text-text-dark/60 text-sm font-semibold">Carrito vacío</p>
+                    <p class="text-text-dark/40 text-xs mt-1">Agrega productos al pedido</p>
+                </div>
+            } @else {
+                @for (item of cartItems; track item.productoId) {
+                <div class="flex items-center justify-between gap-3 p-3 bg-cream/20 rounded-xl border border-cream/50">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-xs text-moss truncate">{{ item.nombre }}</h4>
+                        <p class="text-[10px] text-text-dark/55 mt-0.5">{{ item.cantidad }}x {{ formatPrice(item.precioUnitario) }}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button (click)="decreaseQuantity(item)" class="w-6 h-6 rounded-full bg-cream hover:bg-leaf/10 hover:text-leaf text-moss flex items-center justify-center text-xs font-bold transition-all cursor-pointer">
+                            -
+                        </button>
+                        <span class="text-xs font-bold text-moss w-4 text-center">{{ item.cantidad }}</span>
+                        <button (click)="increaseQuantity(item)" class="w-6 h-6 rounded-full bg-cream hover:bg-leaf/10 hover:text-leaf text-moss flex items-center justify-center text-xs font-bold transition-all cursor-pointer">
+                            +
+                        </button>
+                    </div>
+                </div>
+                }
+            }
         </div>
 
         <!-- Footer Summary -->
@@ -148,21 +176,19 @@
             <div class="space-y-2 mb-4">
                 <div class="flex justify-between text-xs text-text-dark/60">
                     <span>Subtotal</span>
-                    <span class="font-semibold font-mono">$0,00</span>
-                </div>
-                <div class="flex justify-between text-xs text-text-dark/60">
-                    <span>IVA (21%)</span>
-                    <span class="font-semibold font-mono">$0,00</span>
+                    <span class="font-semibold font-mono text-moss">{{ formatPrice(cartSubtotal) }}</span>
                 </div>
                 <div class="flex justify-between text-sm font-bold text-moss pt-2 border-t border-cream/80">
                     <span>Total</span>
-                    <span class="font-mono text-leaf">$0,00</span>
+                    <span class="font-mono text-leaf">{{ formatPrice(cartTotal) }}</span>
                 </div>
             </div>
 
             <div class="space-y-2">
                 <button
-                    class="w-full py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf text-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                    (click)="confirmarPedido()"
+                    [disabled]="cartItems.length === 0"
+                    class="w-full py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf text-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -170,13 +196,125 @@
                     Confirmar Pedido
                 </button>
                 <button
-                    class="w-full py-2.5 bg-transparent border border-cream/80 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-sm font-semibold rounded-2xl transition-all duration-200 cursor-pointer">
+                    (click)="cancelarPedido()"
+                    [disabled]="cartItems.length === 0"
+                    class="w-full py-2.5 bg-transparent border border-cream/80 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-sm font-semibold rounded-2xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancelar
                 </button>
             </div>
         </div>
     </aside>
 
+    <!-- Mobile Cart Drawer -->
+    <aside
+        class="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white z-50 flex flex-col shadow-2xl border-l border-black/70 transition-transform duration-300 lg:hidden"
+        [class.translate-x-0]="isCartOpen" [class.translate-x-full]="!isCartOpen">
+
+        <!-- Header -->
+        <div class="px-5 py-5 border-b border-cream/60 flex items-center justify-between">
+            <div class="flex flex-col">
+                <div class="flex items-center gap-2 mb-1">
+                    <h2 class="font-display text-lg font-bold text-moss">Pedido Actual</h2>
+                    <span
+                        class="bg-gradient-to-r from-leaf to-earth text-cream text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        @if (isDelivery) { Para Llevar } @else { Mesa {{ selectedTable }} }
+                    </span>
+                </div>
+                <p class="text-text-dark/45 text-[11px]">Orden #{{ orderNumber }}</p>
+            </div>
+
+            <!-- Close Button -->
+            <button (click)="toggleCart()"
+                class="text-text-dark/45 hover:text-moss p-1 rounded-lg hover:bg-cream/40 transition-colors cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+            @if (cartItems.length === 0) {
+                <!-- Empty state -->
+                <div class="h-full flex flex-col items-center justify-center py-10 opacity-40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-moss mb-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p class="text-text-dark/60 text-sm font-semibold">Carrito vacío</p>
+                    <p class="text-text-dark/40 text-xs mt-1">Agrega productos al pedido</p>
+                </div>
+            } @else {
+                @for (item of cartItems; track item.productoId) {
+                <div class="flex items-center justify-between gap-3 p-3 bg-cream/20 rounded-xl border border-cream/50">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-xs text-moss truncate">{{ item.nombre }}</h4>
+                        <p class="text-[10px] text-text-dark/55 mt-0.5">{{ item.cantidad }}x {{ formatPrice(item.precioUnitario) }}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button (click)="decreaseQuantity(item)" class="w-6 h-6 rounded-full bg-cream hover:bg-leaf/10 hover:text-leaf text-moss flex items-center justify-center text-xs font-bold transition-all cursor-pointer">
+                            -
+                        </button>
+                        <span class="text-xs font-bold text-moss w-4 text-center">{{ item.cantidad }}</span>
+                        <button (click)="increaseQuantity(item)" class="w-6 h-6 rounded-full bg-cream hover:bg-leaf/10 hover:text-leaf text-moss flex items-center justify-center text-xs font-bold transition-all cursor-pointer">
+                            +
+                        </button>
+                    </div>
+                </div>
+                }
+            }
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="px-5 py-5 bg-cream/30 border-t border-cream/60">
+            <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-xs text-text-dark/60">
+                    <span>Subtotal</span>
+                    <span class="font-semibold font-mono text-moss">{{ formatPrice(cartSubtotal) }}</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-moss pt-2 border-t border-cream/80">
+                    <span>Total</span>
+                    <span class="font-mono text-leaf">{{ formatPrice(cartTotal) }}</span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <button
+                    (click)="confirmarPedido()"
+                    [disabled]="cartItems.length === 0"
+                    class="w-full py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf text-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirmar Pedido
+                </button>
+                <button
+                    (click)="cancelarPedido()"
+                    [disabled]="cartItems.length === 0"
+                    class="w-full py-2.5 bg-transparent border border-cream/80 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-sm font-semibold rounded-2xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile FAB: open cart on small screens -->
+    <button (click)="toggleCart()"
+        class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-leaf to-earth text-cream rounded-full shadow-xl flex items-center justify-center z-50 active:scale-90 transition-transform cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        @if (totalCartQuantity > 0) {
+        <span
+            class="absolute -top-1 -right-1 bg-blossom text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow animate-bounce">
+            {{ totalCartQuantity }}
+        </span>
+        }
+    </button>
 </div>
 
 <!-- Backdrop for Mobile Cart -->
@@ -184,89 +322,3 @@
     [class.opacity-100]="isCartOpen" [class.pointer-events-auto]="isCartOpen" [class.opacity-0]="!isCartOpen"
     [class.pointer-events-none]="!isCartOpen" (click)="toggleCart()">
 </div>
-
-<!-- Mobile Cart Drawer -->
-<aside
-    class="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white z-50 flex flex-col shadow-2xl border-l border-black/70 transition-transform duration-300 lg:hidden"
-    [class.translate-x-0]="isCartOpen" [class.translate-x-full]="!isCartOpen">
-
-    <!-- Header -->
-    <div class="px-5 py-5 border-b border-cream/60 flex items-center justify-between">
-        <div class="flex flex-col">
-            <div class="flex items-center gap-2 mb-1">
-                <h2 class="font-display text-lg font-bold text-moss">Pedido Actual</h2>
-                <span
-                    class="bg-gradient-to-r from-leaf to-earth text-cream text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                    Mesa 1
-                </span>
-            </div>
-            <p class="text-text-dark/45 text-[11px]">Orden #2405-A10</p>
-        </div>
-
-        <!-- Close Button -->
-        <button (click)="toggleCart()"
-            class="text-text-dark/45 hover:text-moss p-1 rounded-lg hover:bg-cream/40 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-    </div>
-
-    <!-- Cart Items -->
-    <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        <!-- Empty state -->
-        <div class="h-full flex flex-col items-center justify-center py-10 opacity-40">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-moss mb-3" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="1">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            <p class="text-text-dark/60 text-sm font-semibold">Carrito vacio</p>
-            <p class="text-text-dark/40 text-xs mt-1">Agrega productos al pedido</p>
-        </div>
-    </div>
-
-    <!-- Footer Summary -->
-    <div class="px-5 py-5 bg-cream/30 border-t border-cream/60">
-        <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-xs text-text-dark/60">
-                <span>Subtotal</span>
-                <span class="font-semibold font-mono">$0,00</span>
-            </div>
-            <div class="flex justify-between text-xs text-text-dark/60">
-                <span>IVA (21%)</span>
-                <span class="font-semibold font-mono">$0,00</span>
-            </div>
-            <div class="flex justify-between text-sm font-bold text-moss pt-2 border-t border-cream/80">
-                <span>Total</span>
-                <span class="font-mono text-leaf">$0,00</span>
-            </div>
-        </div>
-
-        <div class="space-y-2">
-            <button
-                class="w-full py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf text-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Confirmar Pedido
-            </button>
-            <button (click)="toggleCart()"
-                class="w-full py-2.5 bg-transparent border border-cream/80 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-sm font-semibold rounded-2xl transition-all duration-200 cursor-pointer">
-                Cancelar
-            </button>
-        </div>
-    </div>
-</aside>
-
-<!-- Mobile FAB: open cart on small screens -->
-<button (click)="toggleCart()"
-    class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-leaf to-earth text-cream rounded-full shadow-xl flex items-center justify-center z-50 active:scale-90 transition-transform cursor-pointer">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-    </svg>
-    <span
-        class="absolute -top-1 -right-1 bg-blossom text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">0</span>
-</button>

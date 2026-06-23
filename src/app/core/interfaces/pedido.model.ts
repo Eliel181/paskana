@@ -1,9 +1,8 @@
 export interface Pedido {
     id: string;
     numeroPedido: number;
-
-    //clienteId?: string;
-    //clienteNombre?: string;
+    usuarioId?: string;   // el id del currentUser que esta haciendo el pedido
+    usuarioNombre?: string;
 
     estado: EstadoPedido;
 
@@ -16,6 +15,11 @@ export interface Pedido {
     metodoPago: MetodoPago;
 
     observaciones?: string;
+    mesa?: number;
+    paraLlevar?: boolean;
+
+    estaPagado?: boolean;
+    codigoOrden?: string;
 
     fechaCreacion: Date;
     fechaActualizacion?: Date;
@@ -37,8 +41,8 @@ export type EstadoPedido =
     | 'cancelado';
 
 export type MetodoPago =
+    | 'por cobrar'
     | 'efectivo'
     | 'debito'
     | 'credito'
-    | 'transferencia'
-    | 'mercado_pago';
+    | 'transferencia';
