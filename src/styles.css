@@ -74,3 +74,32 @@
 .card-shadow {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+
+/* Ocultar barra de scroll en sliders horizontales */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Estilos de impresión para ticket térmico */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #print-section, #print-section * {
+        visibility: visible !important;
+    }
+    #print-section {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        display: block !important;
+    }
+}

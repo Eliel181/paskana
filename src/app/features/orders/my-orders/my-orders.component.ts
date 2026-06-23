@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -10,13 +10,19 @@ import { Pedido } from '../../../core/interfaces/pedido.model';
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.css'
 })
-export class MyOrdersComponent implements OnInit, OnDestroy {
+export class MyOrdersComponent implements OnInit, OnDestroy, OnChanges {
   private firestoreService = inject(FirestoreService);
   private authService = inject(AuthService);
   private subscription: Subscription | null = null;
 
+  @Input() selectedDate: Date = new Date();
+  @Output() printOrder = new EventEmitter<Pedido>();
+  @Output() manageOrder = new EventEmitter<Pedido>();
+
   isLoading = true;
+  allOrders: Pedido[] = [];
   orders: Pedido[] = [];
+  expandedOrderId: string | null = null;
 
   ngOnInit(): void {
     const currentUser = this.authService.currentUser();
@@ -29,14 +35,8 @@ export class MyOrdersComponent implements OnInit, OnDestroy {
       .getCollection<Pedido>('pedidos')
       .subscribe({
         next: (data) => {
-          // Filter by today and created by the current user
-          this.orders = data
-            .filter(o => o.usuarioId === currentUser.uid && this.isToday(o.fechaCreacion))
-            .sort((a, b) => {
-              const dateA = this.getJsDate(a.fechaCreacion).getTime();
-              const dateB = this.getJsDate(b.fechaCreacion).getTime();
-              return dateB - dateA; // Sort newest first
-            });
+          this.allOrders = data;
+          this.filterOrders();
           this.isLoading = false;
         },
         error: (err) => {
@@ -46,17 +46,50 @@ export class MyOrdersComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedDate'] && !changes['selectedDate'].firstChange) {
+      this.filterOrders();
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
 
-  isToday(dateInput: any): boolean {
+  filterOrders(): void {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.orders = [];
+      return;
+    }
+
+    this.orders = this.allOrders
+      .filter(o => o.usuarioId === currentUser.uid && this.isSameDay(o.fechaCreacion, this.selectedDate))
+      .sort((a, b) => {
+        const dateA = this.getJsDate(a.fechaCreacion).getTime();
+        const dateB = this.getJsDate(b.fechaCreacion).getTime();
+        return dateB - dateA; // Sort newest first
+      });
+  }
+
+  isSameDay(dateInput: any, targetDate: Date): boolean {
     if (!dateInput) return false;
     const d = this.getJsDate(dateInput);
-    const today = new Date();
-    return d.getDate() === today.getDate() &&
-           d.getMonth() === today.getMonth() &&
-           d.getFullYear() === today.getFullYear();
+    return d.getDate() === targetDate.getDate() &&
+           d.getMonth() === targetDate.getMonth() &&
+           d.getFullYear() === targetDate.getFullYear();
+  }
+
+  toggleOrderExpansion(orderId: string): void {
+    if (this.expandedOrderId === orderId) {
+      this.expandedOrderId = null;
+    } else {
+      this.expandedOrderId = orderId;
+    }
+  }
+
+  isOrderExpanded(orderId: string): boolean {
+    return this.expandedOrderId === orderId;
   }
 
   getJsDate(dateInput: any): Date {
@@ -79,7 +112,18 @@ export class MyOrdersComponent implements OnInit, OnDestroy {
 
   formatTime(dateInput: any): string {
     const d = this.getJsDate(dateInput);
-    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    const today = new Date();
+    const isToday = d.getDate() === today.getDate() &&
+                    d.getMonth() === today.getMonth() &&
+                    d.getFullYear() === today.getFullYear();
+    
+    const timeStr = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' hs';
+    if (isToday) {
+      return timeStr;
+    } else {
+      const dateStr = d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
+      return `${dateStr} - ${timeStr}`;
+    }
   }
 
   getStatusClass(estado: string): string {
