@@ -104,31 +104,19 @@ ng g c features/orders/order --skip-tests
 ng g c features/orders/all-orders --skip-tests
 ng g c features/orders/my-orders --skip-tests
 
-# Tasks
-ng g component features/tasks/gestion-tareas --skip-tests
-ng g component features/tasks/edit-tarea --skip-tests
-
-# Employee
-ng g component features/employee/mis-tareas --skip-tests
-ng g component features/employee/detalle-tarea --skip-tests
-
-#Referents
-ng g c features/referents/calendario --skip-tests
-
-#Eleccion
-ng g c features/eleccion/eleccion-list --skip-tests
-ng g c features/eleccion/eleccion-config --skip-tests
+# Cash
+ng g c features/cash/cash-closing
 
 # Public
 ng g c features/auth/login --skip-tests
 ng g c features/auth/register --skip-tests
 
 # Perfil Usuario
-ng g component features/auth/perfil --skip-tests
+ng g component features/auth/profile --skip-tests
 
 
 # Verificar Email
-ng g component features/auth/verificar-email --skip-tests
+ng g component features/auth/verify-email --skip-tests
 
 # Olvidaste tu contraseña
 ng g component features/auth/forgot-password --skip-tests
