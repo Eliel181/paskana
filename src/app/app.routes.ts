@@ -38,6 +38,9 @@ export const routes: Routes = [
             },
             {
                 path: 'pedido', loadComponent: () => import('./features/orders/order/order.component').then(m => m.OrderComponent)
+            },
+            {
+                path: 'caja', loadComponent: () => import('./features/cash/cash-closing/cash-closing.component').then(m => m.CashClosingComponent)
             }
         ]
     }

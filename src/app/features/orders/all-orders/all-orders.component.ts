@@ -4,11 +4,11 @@ import { Subscription } from 'rxjs';
 import { Pedido } from '../../../core/interfaces/pedido.model';
 import { MyOrdersComponent } from '../my-orders/my-orders.component';
 import { FormsModule } from '@angular/forms';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 // Configurar fuentes virtuales de pdfmake
-(pdfMake as any).vfs = pdfFonts && pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : (pdfMake as any).vfs;
+pdfMake.vfs = pdfFonts && pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfMake.vfs;
 
 @Component({
   selector: 'app-all-orders',
