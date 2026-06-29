@@ -1,25 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface MovimientoCaja {
-  id: string;
-  tipo: 'ingreso' | 'egreso';
-  monto: number;
-  concepto: string;
-  fecha: Date;
-}
-
-interface CierreCajaRegistro {
-  fecha: Date;
-  cajaInicial: number;
-  esperado: number;
-  real: number;
-  diferencia: number;
-  responsable: string;
-  turno: 'mañana' | 'tarde';
-  efectivoDejado?: number;
-}
+import { Subscription } from 'rxjs';
+import { CierreCaja, MovimientoCaja } from '../../../core/interfaces/cierre-caja.model';
+import { Pedido } from '../../../core/interfaces/pedido.model';
+import { FirestoreService } from '../../../core/services/firestore.service';
 
 @Component({
   selector: 'app-cash-closing',
@@ -27,19 +12,31 @@ interface CierreCajaRegistro {
   templateUrl: './cash-closing.component.html',
   styleUrl: './cash-closing.component.css'
 })
-export class CashClosingComponent {
+export class CashClosingComponent implements OnInit, OnDestroy {
+  private firestoreService = inject(FirestoreService);
+  private ventasSub: Subscription | null = null;
+  private cierresSub: Subscription | null = null;
+
   // Estado de la caja del día
   isClosed = false;
   fechaCaja: Date = new Date();
   responsableActual = 'Eliel';
-  turno: 'mañana' | 'tarde' = 'mañana';
+  
+  private _turno: 'mañana' | 'tarde' = 'mañana';
+  get turno(): 'mañana' | 'tarde' {
+    return this._turno;
+  }
+  set turno(value: 'mañana' | 'tarde') {
+    this._turno = value;
+    this.cargarVentasDelTurno();
+  }
 
   // Valores de la caja
   cajaInicial = 5000;
-  ventasEfectivo = 12450;
-  ventasDebito = 8300;
-  ventasCredito = 4200;
-  ventasTransferencia = 9100;
+  ventasEfectivo = 0;
+  ventasDebito = 0;
+  ventasCredito = 0;
+  ventasTransferencia = 0;
   
   // Arqueo
   efectivoReal = 0;
@@ -53,17 +50,109 @@ export class CashClosingComponent {
   movimientoConcepto = '';
 
   // Movimientos del día
-  movimientos: MovimientoCaja[] = [
-    { id: '1', tipo: 'egreso', monto: 1200, concepto: 'Compra de insumos urgentes (leche)', fecha: new Date() },
-    { id: '2', tipo: 'ingreso', monto: 1500, concepto: 'Cambio de billetes chicos provisto', fecha: new Date() }
-  ];
+  movimientos: MovimientoCaja[] = [];
 
   // Historial de cierres
-  cierresAnteriores: CierreCajaRegistro[] = [
-    { fecha: new Date(Date.now() - 86400000), cajaInicial: 5000, esperado: 32450, real: 32450, diferencia: 0, responsable: 'Eliel', turno: 'tarde', efectivoDejado: 5000 },
-    { fecha: new Date(Date.now() - 86400000 * 2), cajaInicial: 5000, esperado: 28450, real: 28350, diferencia: -100, responsable: 'Laura', turno: 'mañana', efectivoDejado: 5000 },
-    { fecha: new Date(Date.now() - 86400000 * 3), cajaInicial: 5000, esperado: 30100, real: 30150, diferencia: 50, responsable: 'Eliel', turno: 'tarde', efectivoDejado: 5000 }
-  ];
+  cierresAnteriores: CierreCaja[] = [];
+
+  ngOnInit(): void {
+    this.cargarVentasDelTurno();
+    this.cargarHistorialCierres();
+  }
+
+  ngOnDestroy(): void {
+    this.ventasSub?.unsubscribe();
+    this.cierresSub?.unsubscribe();
+  }
+
+  cargarVentasDelTurno() {
+    if (this.ventasSub) {
+      this.ventasSub.unsubscribe();
+    }
+
+    const start = new Date(this.fechaCaja);
+    const end = new Date(this.fechaCaja);
+    if (this.turno === 'mañana') {
+      start.setHours(7, 0, 0, 0);
+      end.setHours(14, 0, 0, 0);
+    } else {
+      start.setHours(16, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+    }
+
+    this.ventasSub = this.firestoreService
+      .getCollectionByDateRange<Pedido>('pedidos', 'fechaCreacion', start, end)
+      .subscribe({
+        next: (pedidos) => {
+          let efectivo = 0;
+          let debito = 0;
+          let credito = 0;
+          let transferencia = 0;
+
+          pedidos.forEach(pedido => {
+            // Solo se deben sumar los pedidos que sean != 'por cobrar' y != 'cancelado'
+            if (pedido.estado !== 'cancelado' && pedido.metodoPago !== 'por cobrar') {
+              const total = pedido.total || 0;
+              switch (pedido.metodoPago) {
+                case 'efectivo':
+                  efectivo += total;
+                  break;
+                case 'debito':
+                  debito += total;
+                  break;
+                case 'credito':
+                  credito += total;
+                  break;
+                case 'transferencia':
+                  transferencia += total;
+                  break;
+              }
+            }
+          });
+
+          this.ventasEfectivo = efectivo;
+          this.ventasDebito = debito;
+          this.ventasCredito = credito;
+          this.ventasTransferencia = transferencia;
+        },
+        error: (err) => {
+          console.error('Error al cargar ventas del turno:', err);
+        }
+      });
+  }
+
+  cargarHistorialCierres() {
+    this.cierresSub = this.firestoreService
+      .getCollection<CierreCaja>('cierres_caja')
+      .subscribe({
+        next: (cierres) => {
+          this.cierresAnteriores = cierres.map(c => ({
+            ...c,
+            fecha: this.getJsDate(c.fecha),
+            movimientos: (c.movimientos || []).map(m => ({
+              ...m,
+              fecha: this.getJsDate(m.fecha)
+            }))
+          })).sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+        },
+        error: (err) => {
+          console.error('Error al cargar historial de cierres:', err);
+        }
+      });
+  }
+
+  getJsDate(dateInput: any): Date {
+    if (!dateInput) return new Date();
+    if (typeof dateInput.toDate === 'function') {
+      return dateInput.toDate();
+    } else if (dateInput instanceof Date) {
+      return dateInput;
+    } else if (dateInput.seconds) {
+      return new Date(dateInput.seconds * 1000);
+    } else {
+      return new Date(dateInput);
+    }
+  }
 
   // Getters para cálculos automáticos
   get totalVentas(): number {
@@ -127,7 +216,7 @@ export class CashClosingComponent {
     this.movimientos = this.movimientos.filter(m => m.id !== id);
   }
 
-  realizarCierre() {
+  async realizarCierre() {
     if (this.efectivoReal <= 0) {
       if (!confirm('¿Estás seguro de realizar el cierre de caja con $0 en efectivo real?')) {
         return;
@@ -140,19 +229,36 @@ export class CashClosingComponent {
       }
     }
 
-    this.isClosed = true;
-
-    // Agregar al historial de cierres
-    this.cierresAnteriores.unshift({
+    const nuevoCierre: CierreCaja = {
       fecha: new Date(),
-      cajaInicial: this.cajaInicial,
-      esperado: this.efectivoEsperado,
-      real: this.efectivoReal,
-      diferencia: this.diferencia,
       responsable: this.responsableActual,
       turno: this.turno,
-      efectivoDejado: this.efectivoDejado
-    });
+      cajaInicial: this.cajaInicial,
+      ventasEfectivo: this.ventasEfectivo,
+      ventasDebito: this.ventasDebito,
+      ventasCredito: this.ventasCredito,
+      ventasTransferencia: this.ventasTransferencia,
+      totalVentas: this.totalVentas,
+      movimientos: [...this.movimientos],
+      totalIngresosManuales: this.totalIngresosManuales,
+      totalEgresosManuales: this.totalEgresosManuales,
+      efectivoEsperado: this.efectivoEsperado,
+      efectivoReal: this.efectivoReal,
+      diferencia: this.diferencia,
+      efectivoDejado: this.efectivoDejado,
+      efectivoARetirar: this.efectivoARetirar,
+      observaciones: this.observaciones,
+      estado: 'cerrado'
+    };
+
+    try {
+      await this.firestoreService.addDocument('cierres_caja', nuevoCierre);
+      this.isClosed = true;
+      alert('Cierre de caja registrado exitosamente en Firestore.');
+    } catch (err) {
+      console.error('Error al guardar el cierre de caja:', err);
+      alert('Hubo un error al guardar el cierre de caja en la base de datos.');
+    }
   }
 
   reabrirCaja() {

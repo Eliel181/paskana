@@ -287,7 +287,7 @@
                   <span>•</span>
                   <span>Caja Inicial: {{ formatPrice(cierre.cajaInicial) }}</span>
                   <span>•</span>
-                  <span>Ventas: {{ formatPrice(cierre.esperado - cierre.cajaInicial) }}</span>
+                  <span>Ventas: {{ formatPrice(cierre.efectivoEsperado - cierre.cajaInicial) }}</span>
                   @if (cierre.efectivoDejado) {
                     <span>•</span>
                     <span>Fondo Dejado: {{ formatPrice(cierre.efectivoDejado) }}</span>
@@ -298,7 +298,7 @@
               <div class="flex items-center gap-6 sm:text-right">
                 <div>
                   <span class="text-[9px] uppercase tracking-wider text-text-dark/45 font-bold block">Efectivo Real</span>
-                  <span class="text-sm font-bold text-moss font-mono block">{{ formatPrice(cierre.real) }}</span>
+                  <span class="text-sm font-bold text-moss font-mono block">{{ formatPrice(cierre.efectivoReal) }}</span>
                 </div>
 
                 <div class="min-w-[80px]">

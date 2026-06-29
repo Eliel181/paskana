@@ -71,4 +71,14 @@ export class FirestoreService {
     const q = query(collectionRef, where('online', '==', true));
     return collectionData(q, { idField: 'id' }) as Observable<T[]>;
   }
+
+  getCollectionByDateRange<T>(path: string, dateField: string, start: Date, end: Date): Observable<T[]> {
+    const collectionRef = collection(this.firestore, path);
+    const q = query(
+      collectionRef,
+      where(dateField, '>=', start),
+      where(dateField, '<=', end)
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<T[]>;
+  }
 }
