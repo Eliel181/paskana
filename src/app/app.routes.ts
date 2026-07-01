@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component';
 import { HomeComponent } from './pages/home/home.component';
 import { PrivateLayoutComponent } from './layout/private-layout/private-layout.component';
+import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full' },
@@ -23,6 +25,7 @@ export const routes: Routes = [
     {
         path: 'administracion',
         component: PrivateLayoutComponent,
+        canActivate: [authGuard, adminGuard],
         children: [
             {
                 path: 'productos', loadComponent: () => import('./features/product/list-products/list-products.component').then(m => m.ListProductsComponent)

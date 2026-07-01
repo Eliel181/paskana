@@ -17,39 +17,95 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="#"
+                    <a routerLink="menu"
                         class="px-8 py-3 bg-leaf text-cream font-semibold rounded-full hover:bg-moss transition-all hover:scale-105 duration-300 shadow-lg text-center">
                         Nuestro Menu
                     </a>
-                    <a href="#"
+                    <!-- <a href="#"
                         class="px-8 py-3 border border-text-dark text-text-dark font-semibold rounded-full hover:bg-white/95 transition-all hover:scale-105 duration-300 text-center">
-                        Nestra Historia
-                    </a>
+                        Nuestra Historia
+                    </a> -->
                 </div>
             </div>
 
             <!-- Featured coffee card - resized and centered -->
             <div class="relative animate-float max-w-sm mx-auto lg:mr-0 w-full">
+                @if (isLoadingFeatured) {
+                <!-- Skeleton loader -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow animate-pulse">
+                    <div class="w-full h-64 bg-cream/70"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-6 bg-cream rounded-full w-2/3"></div>
+                        <div class="h-4 bg-cream/80 rounded-full w-full"></div>
+                        <div class="h-4 bg-cream/80 rounded-full w-5/6"></div>
+                        <div class="pt-4 flex justify-between items-center">
+                            <div class="h-6 bg-cream rounded-full w-1/4"></div>
+                            <div class="h-8 bg-cream rounded-full w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
+                } @else {
+                @let product = featuredProduct || defaultProduct;
                 <div
-                    class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow transition-transform duration-300 hover:scale-[1.02]">
-                    <img src="/sub-gol.jpg" alt="Featured Coffee" class="w-full h-64 object-cover">
-                    <div class="p-6">
-                        <h3 class="font-display text-xl text-moss">Especial Latte</h3>
-                        <p class="text-text-dark/80 mt-1 text-sm leading-relaxed">Delicioso espresso con leche
-                            espumosa.</p>
-                        <div class="mt-4 flex justify-between items-center">
-                            <span class="font-semibold text-leaf text-xl">$5.000</span>
-                            <!-- <button
-                                class="px-5 py-2.5 bg-blossom text-white rounded-full text-sm font-medium hover:bg-blossom/90 hover:shadow-md transition-all cursor-pointer">
-                                Order Now
-                            </button> -->
+                    class="bg-white rounded-2xl overflow-hidden shadow-xl border border-cream/50 card-shadow transition-transform duration-300 hover:scale-[1.02] flex flex-col h-full">
+                    
+                    <!-- Image with fallback -->
+                    <div class="w-full h-64 bg-[#FAF7F2] relative overflow-hidden flex items-center justify-center">
+                        @if (product.imagen?.secure_url && !imageError) {
+                        <img [src]="product.imagen.secure_url" [alt]="product.nombre"
+                            (error)="imageError = true"
+                            class="w-full h-full object-cover">
+                        } @else {
+                        <!-- Placeholder when image fails to load -->
+                        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cream to-[#FAF2E8] p-6 text-center select-none">
+                            <div class="p-4 rounded-full bg-cream shadow-inner border border-leaf-light/20 text-leaf-light">
+                                @if (product.categoria === 'cafe') {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 8h1a3 3 0 0 1 0 6h-1M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 3v2M10 3v2M14 3v2" />
+                                </svg>
+                                } @else if (product.categoria === 'te') {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 8h1a3 3 0 0 1 0 6h-1M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM10 8c0-3-2-3-2-5M8 1h4v2H8z" />
+                                </svg>
+                                } @else if (product.categoria === 'bebida' || product.categoria === 'jugo') {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12l-2 18H8L6 3zM15 3l2-2h2M6 8h12" />
+                                </svg>
+                                } @else if (product.categoria === 'postre' || product.categoria === 'torta' || product.categoria === 'factura') {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 9h20L12 2zM2 9v8a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V9M7 9v11M17 9v11" />
+                                    <circle cx="12" cy="5.5" r="1" fill="currentColor" />
+                                </svg>
+                                } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 18h18M12 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM20 18a8 8 0 0 0-16 0" />
+                                </svg>
+                                }
+                            </div>
+                            <span class="text-xs font-semibold uppercase tracking-widest text-text-dark/40 mt-3">{{ product.categoria }}</span>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-display text-xl text-moss">{{ product.nombre }}</h3>
+                            <p class="text-text-dark/80 mt-2 text-sm leading-relaxed line-clamp-3">{{ product.descripcion }}</p>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center pt-2">
+                            <span class="font-semibold text-leaf text-xl">{{ formatPrice(product.precio) }}</span>
+                            <a routerLink="menu"
+                                class="px-5 py-2.5 bg-gradient-to-r from-leaf to-leaf-light text-cream rounded-full text-xs font-bold hover:from-moss hover:to-leaf hover:shadow-md transition-all cursor-pointer">
+                                Pedir Ahora
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div
                     class="absolute -top-4 -right-4 bg-leaf-light text-cream px-4 py-1.5 rounded-full text-xs font-semibold shadow-md uppercase tracking-wider">
-                    Oferta Especial
+                    {{ featuredProduct ? 'Destacado' : 'Oferta Especial' }}
                 </div>
+                }
             </div>
         </div>
     </div>
@@ -58,7 +114,7 @@
 <!-- Cafe benefits section -->
 <div class="bg-[#FCFAF7] py-16 border-t border-cream/50">
     <div class="max-w-7xl mx-auto px-6">
-        <h2 class="font-display text-3xl text-center text-moss mb-12">Porque amaras Paskana</h2>
+        <h2 class="font-display text-3xl text-center text-moss mb-12">Por qué te encantará Paskana</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Card 1 -->
@@ -74,9 +130,9 @@
                             d="M12 4.5h1.5a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5H12V4.5zm1.5 1H12v4h1.5a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z" />
                     </svg>
                 </div>
-                <h3 class="font-display text-xl text-moss mb-2">Artisan Brewing</h3>
-                <p class="text-text-dark/80 text-sm leading-relaxed">Every cup is carefully crafted by certified
-                    baristas using premium, ethically sourced specialty beans.</p>
+                <h3 class="font-display text-xl text-moss mb-2">Preparación Artesanal</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Cada taza es preparada cuidadosamente por baristas
+                    certificados utilizando granos de especialidad de origen ético.</p>
             </div>
 
             <!-- Card 2 -->
@@ -92,9 +148,9 @@
                             d="M13.229 8.271a.482.482 0 0 0-.063-.745A9.455 9.455 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.577 1.336c.205.132.48.108.652-.065zm-2.183 2.183c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.187 0-2.302.318-3.266.872-.285.165-.326.544-.1.77l.7.7c.155.155.4.155.556 0A4.477 4.477 0 0 1 8 10c1.074 0 2.06.377 2.83 1.008a.393.393 0 0 0 .557 0l.7-.71zM8 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                     </svg>
                 </div>
-                <h3 class="font-display text-xl text-moss mb-2">Cozy Ambience</h3>
-                <p class="text-text-dark/80 text-sm leading-relaxed">Unwind in our warm, plant-filled seating areas with
-                    comfortable seating and high-speed fiber internet.</p>
+                <h3 class="font-display text-xl text-moss mb-2">Ambiente Acogedor</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Relájate en nuestras cálidas áreas rodeadas de
+                    plantas, con asientos cómodos e internet de fibra óptica de alta velocidad.</p>
             </div>
 
             <!-- Card 3 -->
@@ -110,10 +166,78 @@
                             d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM4 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                     </svg>
                 </div>
-                <h3 class="font-display text-xl text-moss mb-2">Freshly Baked</h3>
-                <p class="text-text-dark/80 text-sm leading-relaxed">Enjoy our daily selection of house-made pastries,
-                    artisan sourdough treats, and gluten-free delights.</p>
+                <h3 class="font-display text-xl text-moss mb-2">Recién Horneado</h3>
+                <p class="text-text-dark/80 text-sm leading-relaxed">Disfruta de nuestra selección diaria de pastelería
+                    casera, delicias artesanales de masa madre y opciones sin gluten.</p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Location & Map Section -->
+<section id="ubicacion" class="py-20 bg-white border-t border-cream/40">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Text Content -->
+            <div class="space-y-6">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 bg-leaf/10 text-leaf rounded-full text-xs font-semibold uppercase tracking-wider">
+                    Ubicación
+                </div>
+                <h2 class="font-display text-3xl md:text-4xl text-moss leading-tight">
+                    Visítanos en nuestro cálido santuario
+                </h2>
+                <p class="text-text-dark/80 leading-relaxed">
+                    Estamos ubicados en el corazón de la ciudad, un espacio diseñado para que disfrutes del mejor café
+                    de especialidad. Ven a trabajar, leer o simplemente a compartir un buen momento.
+                </p>
+                <div class="space-y-4 pt-4">
+                    <div class="flex items-start gap-3.5">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-leaf/10 text-leaf flex items-center justify-center shrink-0">
+                            <!-- Location Pin Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-moss">Dirección</h4>
+                            <p class="text-sm text-text-dark/70">Av. de los Estudiantes, Y4650 La Quiaca, Jujuy</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-leaf/10 text-leaf flex items-center justify-center shrink-0">
+                            <!-- Clock Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-moss">Horarios de Atención</h4>
+                            <p class="text-sm text-text-dark/70">Lunes: 17:00 PM - 23:59 PM</p>
+                            <p class="text-sm text-text-dark/70">Martes a Viernes: 08:00 AM - 07:00 PM</p>
+                            <p class="text-sm text-text-dark/70">Sábados y Domingos: 17:00 PM - 23:59 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div
+                class="relative w-full h-[400px] rounded-3xl overflow-hidden shadow-xl border border-cream/60 card-shadow">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d316.59913918779415!2d-65.59584625933648!3d-22.104568626844603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9406a5e7f07ee6e5%3A0xdf02ff7c90ae405e!2sPASKANA%20COFFE%20BREAK!5e0!3m2!1ses-419!2sar!4v1782761207284!5m2!1ses-419!2sar"
+                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+        </div>
+    </div>
+</section>

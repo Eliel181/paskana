@@ -72,12 +72,77 @@
                     class="bg-white rounded-3xl overflow-hidden shadow-md border border-cream/70 hover:border-blossom/20 transition-all duration-500 hover:shadow-2xl hover:shadow-leaf/5 hover:-translate-y-2 h-full flex flex-col justify-between">
                     <div>
                         <!-- Image -->
-                        <div class="relative overflow-hidden aspect-[4/3] bg-[#FAF7F2]">
-                            <img [src]="item.imagen?.secure_url" [alt]="item.nombre"
+                        <div
+                            class="relative overflow-hidden aspect-[4/3] bg-[#FAF7F2] flex items-center justify-center">
+                            @if (item.imagen.secure_url && !imageErrors[item.id]) {
+                            <img [src]="item.imagen.secure_url" [alt]="item.nombre" (error)="handleImageError(item.id)"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-moss/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                             </div>
+                            } @else {
+                            <!-- Placeholder when image is missing or fails to load -->
+                            <div
+                                class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cream to-[#FAF2E8] p-6 text-center select-none transition-all duration-700 group-hover:scale-105">
+                                <div
+                                    class="p-4 rounded-full bg-cream shadow-inner border border-leaf-light/20 text-leaf-light group-hover:text-leaf group-hover:border-leaf/30 transition-colors duration-500">
+                                    @if (item.categoria === 'cafe') {
+                                    <!-- Coffee cup icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M18 8h1a3 3 0 0 1 0 6h-1M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 3v2M10 3v2M14 3v2" />
+                                    </svg>
+                                    } @else if (item.categoria === 'te') {
+                                    <!-- Tea/Infusion icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M18 8h1a3 3 0 0 1 0 6h-1M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM10 8c0-3-2-3-2-5M8 1h4v2H8z" />
+                                    </svg>
+                                    } @else if (item.categoria === 'bebida' || item.categoria === 'jugo') {
+                                    <!-- Glass with straw/drink icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M6 3h12l-2 18H8L6 3zM15 3l2-2h2M6 8h12" />
+                                    </svg>
+                                    } @else if (item.categoria === 'postre' || item.categoria === 'torta' ||
+                                    item.categoria === 'factura') {
+                                    <!-- Sweet/Cake icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 2L2 9h20L12 2zM2 9v8a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V9M7 9v11M17 9v11" />
+                                        <circle cx="12" cy="5.5" r="1" fill="currentColor" />
+                                    </svg>
+                                    } @else if (item.categoria === 'sandwich' || item.categoria === 'tostado' ||
+                                    item.categoria === 'minuta') {
+                                    <!-- Sandwich/Toast/Food icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 11c0-2 2-4 6-4h6c4 0 6 2 6 4M3 11v2c0 2 2 3 6 3h6c4 0 6-1 6-3v-2M3 11h18M6 13h12M8 15h8" />
+                                    </svg>
+                                    } @else {
+                                    <!-- General Cloche icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 18h18M12 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM20 18a8 8 0 0 0-16 0" />
+                                    </svg>
+                                    }
+                                </div>
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-text-dark/40 mt-3">{{
+                                    item.categoria }}</span>
+                            </div>
+                            }
                             @if (item.destacado) {
                             <div
                                 class="absolute top-4 right-4 bg-gradient-to-r from-blossom to-leaf-light text-cream px-3 py-1.5 rounded-full text-xs font-bold shadow-md uppercase tracking-wider">
@@ -97,8 +162,7 @@
                     </div>
 
                     <!-- Footer / Price -->
-                    <div
-                        class="px-6 pb-6 pt-3 flex justify-between items-center border-t border-cream bg-[#FCFAF7]/40">
+                    <div class="px-6 pb-6 pt-3 flex justify-between items-center border-t border-cream bg-[#FCFAF7]/40">
                         <span class="font-bold text-leaf text-2xl tracking-tight">{{ formatPrice(item.precio) }}</span>
                         <button
                             class="px-5 py-2.5 bg-gradient-to-r from-leaf to-leaf-light text-cream text-sm font-bold rounded-full hover:from-moss hover:to-leaf transition-all duration-300 hover:scale-105 shadow hover:shadow-md cursor-pointer flex items-center gap-1.5">

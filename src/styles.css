@@ -1,5 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Open+Sans:wght@400;500;700&display=swap');
+
 
 @theme {
     /* Colores */
@@ -50,7 +52,6 @@
     }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Open+Sans:wght@400;500;700&display=swap');
 
 .hero-bg {
     background-image:
@@ -79,6 +80,7 @@
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
+
 .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -89,9 +91,12 @@
     body * {
         visibility: hidden !important;
     }
-    #print-section, #print-section * {
+
+    #print-section,
+    #print-section * {
         visibility: visible !important;
     }
+
     #print-section {
         position: absolute !important;
         left: 0 !important;

@@ -4,10 +4,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
 import { Producto } from '../../../core/interfaces/producto.model';
 import { Pedido, PedidoItem } from '../../../core/interfaces/pedido.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-order',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
 })

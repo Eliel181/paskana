@@ -36,6 +36,13 @@ export class MenuItemsComponent implements OnInit, OnDestroy {
   // Array de skeletons para el estado de carga
   readonly skeletons = Array(8).fill(0);
 
+  // Control de errores de imágenes de productos para mostrar placeholders
+  imageErrors: { [productId: string]: boolean } = {};
+
+  handleImageError(productId: string): void {
+    this.imageErrors[productId] = true;
+  }
+
   ngOnInit(): void {
     this.subscription = this.firestoreService
       .getCollection<Producto>('productos')
