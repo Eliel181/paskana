@@ -156,36 +156,66 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
 
   // Actions
   imprimirTicket(order: Pedido) {
-    const heightEstimate = 160 + order.items.length * 15 + (order.observaciones ? 25 : 0);
+    // Calcular altura estimada dinámicamente para evitar saltos de página en tickets de 40mm
+    let dynamicHeight = 140; // Base estática (márgenes + encabezado + totales + pie)
+    
+    // Calcular líneas de los ítems considerando el ancho de la columna
+    order.items.forEach(item => {
+      const text = `${item.cantidad}x ${item.nombre}`;
+      // En 40mm (ancho de impresión ~101pt), estimamos unos 18 caracteres por línea con tamaño de fuente 7
+      const lines = Math.max(1, Math.ceil(text.length / 18));
+      dynamicHeight += lines * 10; // ~10pt por línea de ítem con fuente 7 e interlineado
+    });
+
+    // Si hay observaciones, agregamos el espacio correspondiente para el bloque
+    if (order.observaciones) {
+      const obsLines = Math.max(1, Math.ceil(order.observaciones.length / 18));
+      dynamicHeight += obsLines * 10 + 15; // 15pt para separador y márgenes del bloque
+    }
+    
+    const heightEstimate = dynamicHeight + 20; // Margen de seguridad de 20pt para evitar saltos accidentales
+
     const docDefinition: any = {
       pageSize: {
-        width: 164, // 58mm en puntos
+        width: 113, // 40mm en puntos (40 * 72 / 25.4 ≈ 113.38)
         height: heightEstimate
       },
       pageMargins: [6, 8, 6, 8],
       content: [
         { text: 'PASKANA', fontSize: 13, bold: true, alignment: 'center', margin: [0, 0, 0, 1] },
         { text: 'Café & Delicias', fontSize: 8, alignment: 'center', margin: [0, 0, 0, 2] },
-        { text: '================================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         { text: `Ticket #${order.codigoOrden || order.numeroPedido}`, fontSize: 9, bold: true, margin: [0, 0, 0, 2] },
         { text: `Fecha: ${this.formatTime(order.fechaCreacion)}`, fontSize: 7, margin: [0, 0, 0, 2] },
         { text: `Servicio: ${order.paraLlevar ? 'Para Llevar' : 'Mesa ' + order.mesa}`, fontSize: 7, margin: [0, 0, 0, 4] },
-        { text: '================================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         {
           table: {
             widths: ['*', 'auto'],
             body: order.items.map(item => [
-              { text: `${item.cantidad}x ${item.nombre}`, fontSize: 7, margin: [0, 1, 0, 1] },
-              { text: this.formatPrice(item.subtotal), fontSize: 7, alignment: 'right', margin: [0, 1, 0, 1] }
+              { text: `${item.cantidad}x ${item.nombre}`, fontSize: 7 },
+              { text: this.formatPrice(item.subtotal), fontSize: 7, alignment: 'right' }
             ])
           },
-          layout: 'noBorders',
+          layout: {
+            hLineWidth: () => 0,
+            vLineWidth: () => 0,
+            paddingLeft: () => 0,
+            paddingRight: () => 0,
+            paddingTop: () => 1,
+            paddingBottom: () => 1
+          },
           margin: [0, 0, 0, 4]
         },
+
+        ...(order.observaciones ? [
+          { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+          { text: `Obs: ${order.observaciones}`, fontSize: 7, bold: true, margin: [0, 0, 0, 4] }
+        ] : []),
         
-        { text: '================================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         {
           columns: [
@@ -195,7 +225,7 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
           margin: [0, 2, 0, 4]
         },
         
-        { text: '================================', fontSize: 7, alignment: 'center', margin: [0, 2, 0, 4] },
+        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 2, 0, 4] },
         { text: '¡Gracias por tu visita!', fontSize: 8, bold: true, alignment: 'center', margin: [0, 1, 0, 1] },
         { text: 'Paskana - Control de Comandas', fontSize: 6, alignment: 'center', margin: [0, 1, 0, 0] }
       ]

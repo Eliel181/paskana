@@ -26,11 +26,20 @@ export class MenuItemsComponent implements OnInit, OnDestroy {
   categories: Categoria[] = [
     { label: 'Todos', value: 'todos' },
     { label: 'Cafés', value: 'cafe' },
-    { label: 'Postres', value: 'postre' },
-    { label: 'Jugos', value: 'jugo' },
+    { label: 'Tés', value: 'te' },
     { label: 'Bebidas', value: 'bebida' },
+    { label: 'Jugos', value: 'jugo' },
+    { label: 'Licuados', value: 'licuado' },
+    { label: 'Sándwiches', value: 'sandwich' },
+    { label: 'Tostados', value: 'tostado' },
+    { label: 'Pizzas', value: 'pizza' },
+    { label: 'Papas', value: 'papas' },
     { label: 'Minutas', value: 'minuta' },
-    { label: 'Desayunos', value: 'desayuno' }
+    { label: 'Facturas', value: 'factura' },
+    { label: 'Tortas', value: 'torta' },
+    { label: 'Postres', value: 'postre' },
+    { label: 'Desayunos', value: 'desayuno' },
+    { label: 'Meriendas', value: 'merienda' }
   ];
 
   // Array de skeletons para el estado de carga

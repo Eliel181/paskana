@@ -33,7 +33,18 @@ export class OrderComponent implements OnInit, OnDestroy {
     { label: 'Cafés', value: 'cafe' },
     { label: 'Tés', value: 'te' },
     { label: 'Bebidas', value: 'bebida' },
-    { label: 'Postres', value: 'postre' }
+    { label: 'Jugos', value: 'jugo' },
+    { label: 'Licuados', value: 'licuado' },
+    { label: 'Sándwiches', value: 'sandwich' },
+    { label: 'Tostados', value: 'tostado' },
+    { label: 'Pizzas', value: 'pizza' },
+    { label: 'Papas', value: 'papas' },
+    { label: 'Minutas', value: 'minuta' },
+    { label: 'Facturas', value: 'factura' },
+    { label: 'Tortas', value: 'torta' },
+    { label: 'Postres', value: 'postre' },
+    { label: 'Desayunos', value: 'desayuno' },
+    { label: 'Meriendas', value: 'merienda' }
   ];
 
   readonly skeletons = Array(8).fill(0);

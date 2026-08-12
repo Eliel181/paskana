@@ -164,7 +164,6 @@ export class AuthService {
 
       //si me trae información significa que el usuario ya esta logueado
       if (!appUser) {
-        console.log(`Usuario con UID:${user.uid} no encontrado, Creando doc nuevo...`);
         const newUser: Usuario = {
           uid: user.uid,
           email: user.email!,

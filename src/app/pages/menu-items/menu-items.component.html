@@ -28,7 +28,7 @@
         <!-- Categories Carousel -->
         <div class="mb-10 max-w-4xl mx-auto">
             <div
-                class="flex overflow-x-auto scrollbar-none py-2 gap-3 justify-start md:justify-center px-4 -mx-4 md:mx-0">
+                class="flex overflow-x-auto md:overflow-x-visible md:flex-wrap scrollbar-none py-2 gap-3 justify-start md:justify-center px-4 -mx-4 md:mx-0">
                 @for (category of categories; track category.value) {
                 <button (click)="selectCategory(category.value)"
                     [class]="selectedCategory === category.value
@@ -102,7 +102,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M18 8h1a3 3 0 0 1 0 6h-1M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM10 8c0-3-2-3-2-5M8 1h4v2H8z" />
                                     </svg>
-                                    } @else if (item.categoria === 'bebida' || item.categoria === 'jugo') {
+                                    } @else if (item.categoria === 'bebida' || item.categoria === 'jugo' || item.categoria === 'licuado') {
                                     <!-- Glass with straw/drink icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
@@ -121,7 +121,7 @@
                                         <circle cx="12" cy="5.5" r="1" fill="currentColor" />
                                     </svg>
                                     } @else if (item.categoria === 'sandwich' || item.categoria === 'tostado' ||
-                                    item.categoria === 'minuta') {
+                                    item.categoria === 'minuta' || item.categoria === 'pizza' || item.categoria === 'papas') {
                                     <!-- Sandwich/Toast/Food icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-10 w-10 transition-transform duration-500 group-hover:scale-110"
