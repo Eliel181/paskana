@@ -13,7 +13,8 @@ export type CategoriaProducto =
     | 'merienda'
     | 'pizza'
     | 'licuado'
-    | 'papas';
+    | 'papas'
+    | 'helado';
 
 export interface ImagenProducto {
     public_id: string;

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Pedido } from '../../../core/interfaces/pedido.model';
 import { MyOrdersComponent } from '../my-orders/my-orders.component';
@@ -18,6 +19,7 @@ pdfMake.vfs = pdfFonts && pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfMake.vfs;
 })
 export class AllOrdersComponent implements OnInit, OnDestroy {
   private firestoreService = inject(FirestoreService);
+  private router = inject(Router);
   private subscription: Subscription | null = null;
 
   isLoading = true;
@@ -156,47 +158,58 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
 
   // Actions
   imprimirTicket(order: Pedido) {
-    // Calcular altura estimada dinámicamente para evitar saltos de página en tickets de 40mm
-    let dynamicHeight = 140; // Base estática (márgenes + encabezado + totales + pie)
+    // Calcular altura estimada dinámicamente para evitar saltos de página en tickets de 58mm
+    let dynamicHeight = 135; // Base estática (márgenes + encabezado + totales + pie)
     
-    // Calcular líneas de los ítems considerando el ancho de la columna
+    // En 58mm (ancho ~164pt / printable ~148pt), estimamos unos 26 caracteres por línea con fuente 8
     order.items.forEach(item => {
       const text = `${item.cantidad}x ${item.nombre}`;
-      // En 40mm (ancho de impresión ~101pt), estimamos unos 18 caracteres por línea con tamaño de fuente 7
-      const lines = Math.max(1, Math.ceil(text.length / 18));
-      dynamicHeight += lines * 10; // ~10pt por línea de ítem con fuente 7 e interlineado
+      const lines = Math.max(1, Math.ceil(text.length / 26));
+      dynamicHeight += lines * 11;
+      if (item.comentario && item.comentario.trim()) {
+        const commentLines = Math.max(1, Math.ceil(item.comentario.trim().length / 24));
+        dynamicHeight += commentLines * 10;
+      }
     });
 
     // Si hay observaciones, agregamos el espacio correspondiente para el bloque
     if (order.observaciones) {
-      const obsLines = Math.max(1, Math.ceil(order.observaciones.length / 18));
-      dynamicHeight += obsLines * 10 + 15; // 15pt para separador y márgenes del bloque
+      const obsLines = Math.max(1, Math.ceil(order.observaciones.length / 26));
+      dynamicHeight += obsLines * 11 + 15;
     }
     
-    const heightEstimate = dynamicHeight + 20; // Margen de seguridad de 20pt para evitar saltos accidentales
+    const heightEstimate = dynamicHeight + 25; // Margen de seguridad para evitar saltos accidentales
+
+    const separator = '==================================';
 
     const docDefinition: any = {
       pageSize: {
-        width: 113, // 40mm en puntos (40 * 72 / 25.4 ≈ 113.38)
+        width: 164, // 58mm en puntos (58 * 72 / 25.4 ≈ 164.4)
         height: heightEstimate
       },
-      pageMargins: [6, 8, 6, 8],
+      pageMargins: [8, 8, 8, 8],
       content: [
-        { text: 'PASKANA', fontSize: 13, bold: true, alignment: 'center', margin: [0, 0, 0, 1] },
-        { text: 'Café & Delicias', fontSize: 8, alignment: 'center', margin: [0, 0, 0, 2] },
-        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: 'PASKANA', fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 1] },
+        { text: 'Café & Delicias', fontSize: 9, alignment: 'center', margin: [0, 0, 0, 2] },
+        { text: separator, fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
-        { text: `Ticket #${order.codigoOrden || order.numeroPedido}`, fontSize: 9, bold: true, margin: [0, 0, 0, 2] },
-        { text: `Fecha: ${this.formatTime(order.fechaCreacion)}`, fontSize: 7, margin: [0, 0, 0, 2] },
-        { text: `Servicio: ${order.paraLlevar ? 'Para Llevar' : 'Mesa ' + order.mesa}`, fontSize: 7, margin: [0, 0, 0, 4] },
-        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: `Ticket #${order.codigoOrden || order.numeroPedido}`, fontSize: 10, bold: true, margin: [0, 0, 0, 2] },
+        { text: `Hora: ${this.formatOnlyTime(order.fechaCreacion)}`, fontSize: 8, margin: [0, 0, 0, 2] },
+        { text: `Servicio: ${order.paraLlevar ? 'Para Llevar' : 'Mesa ' + order.mesa}`, fontSize: 8, margin: [0, 0, 0, 4] },
+        { text: separator, fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         {
           table: {
             widths: ['*', 'auto'],
             body: order.items.map(item => [
-              { text: `${item.cantidad}x ${item.nombre}`, fontSize: 7 },
-              { text: this.formatPrice(item.subtotal), fontSize: 7, alignment: 'right' }
+              {
+                text: [
+                  { text: `${item.cantidad}x ${item.nombre}`, bold: true },
+                  ...(item.comentario && item.comentario.trim() ? [{ text: `\n  - ${item.comentario.trim()}`, fontSize: 7, italics: true, bold: false }] : [])
+                ],
+                fontSize: 8
+              },
+              { text: this.formatPrice(item.subtotal), fontSize: 8, alignment: 'right' }
             ])
           },
           layout: {
@@ -204,30 +217,30 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
             vLineWidth: () => 0,
             paddingLeft: () => 0,
             paddingRight: () => 0,
-            paddingTop: () => 1,
-            paddingBottom: () => 1
+            paddingTop: () => 1.5,
+            paddingBottom: () => 1.5
           },
           margin: [0, 0, 0, 4]
         },
 
         ...(order.observaciones ? [
-          { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
-          { text: `Obs: ${order.observaciones}`, fontSize: 7, bold: true, margin: [0, 0, 0, 4] }
+          { text: separator, fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+          { text: `Obs: ${order.observaciones}`, fontSize: 8, bold: true, margin: [0, 0, 0, 4] }
         ] : []),
         
-        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
+        { text: separator, fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         {
           columns: [
-            { text: 'TOTAL:', fontSize: 8, bold: true },
-            { text: this.formatPrice(order.total), fontSize: 8, bold: true, alignment: 'right' }
+            { text: 'TOTAL:', fontSize: 9, bold: true },
+            { text: this.formatPrice(order.total), fontSize: 9, bold: true, alignment: 'right' }
           ],
           margin: [0, 2, 0, 4]
         },
         
-        { text: '=========================', fontSize: 7, alignment: 'center', margin: [0, 2, 0, 4] },
-        { text: '¡Gracias por tu visita!', fontSize: 8, bold: true, alignment: 'center', margin: [0, 1, 0, 1] },
-        { text: 'Paskana - Control de Comandas', fontSize: 6, alignment: 'center', margin: [0, 1, 0, 0] }
+        { text: separator, fontSize: 7, alignment: 'center', margin: [0, 2, 0, 4] },
+        { text: '¡Gracias por tu visita!', fontSize: 8.5, bold: true, alignment: 'center', margin: [0, 1, 0, 1] },
+        { text: 'Paskana - Control de Comandas', fontSize: 6.5, alignment: 'center', margin: [0, 1, 0, 0] }
       ]
     };
 
@@ -239,6 +252,10 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
     this.editEstado = order.estado;
     this.editEstaPagado = !!order.estaPagado;
     this.editMetodoPago = order.metodoPago || 'por cobrar';
+  }
+
+  editarPedido(order: Pedido) {
+    this.router.navigate(['/administracion/pedido', order.id]);
   }
 
   async guardarGestionPedido() {
@@ -304,6 +321,11 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
       const dateStr = d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
       return `${dateStr} - ${timeStr}`;
     }
+  }
+
+  formatOnlyTime(dateInput: any): string {
+    const d = this.getJsDate(dateInput);
+    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' hs';
   }
 
   getStatusClass(estado: string): string {

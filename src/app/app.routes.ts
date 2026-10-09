@@ -19,6 +19,9 @@ export const routes: Routes = [
             },
             {
                 path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
+            },
+            {
+                path: 'perfil', canActivate: [authGuard], loadComponent: () => import('./features/user/user-profile/user-profile.component').then(m => m.UserProfileComponent)
             }
         ]
     },
@@ -43,7 +46,13 @@ export const routes: Routes = [
                 path: 'pedido', loadComponent: () => import('./features/orders/order/order.component').then(m => m.OrderComponent)
             },
             {
+                path: 'pedido/:id', loadComponent: () => import('./features/orders/order/order.component').then(m => m.OrderComponent)
+            },
+            {
                 path: 'caja', loadComponent: () => import('./features/cash/cash-closing/cash-closing.component').then(m => m.CashClosingComponent)
+            },
+            {
+                path: 'perfil', loadComponent: () => import('./features/user/user-profile/user-profile.component').then(m => m.UserProfileComponent)
             }
         ]
     }

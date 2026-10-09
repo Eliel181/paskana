@@ -38,6 +38,7 @@ export class MenuItemsComponent implements OnInit, OnDestroy {
     { label: 'Facturas', value: 'factura' },
     { label: 'Tortas', value: 'torta' },
     { label: 'Postres', value: 'postre' },
+    { label: 'Helados', value: 'helado' },
     { label: 'Desayunos', value: 'desayuno' },
     { label: 'Meriendas', value: 'merienda' }
   ];

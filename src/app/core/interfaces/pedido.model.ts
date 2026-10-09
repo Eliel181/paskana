@@ -31,6 +31,7 @@ export interface PedidoItem {
     cantidad: number;
     precioUnitario: number;
     subtotal: number;
+    comentario?: string;
 }
 
 export type EstadoPedido =

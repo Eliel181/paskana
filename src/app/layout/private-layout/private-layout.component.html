@@ -9,7 +9,7 @@
     class="h-dvh w-64 fixed left-0 top-0 flex flex-col bg-gradient-to-b from-moss via-[#3E2B20] to-[#302118] border-r border-cream/10 shadow-xl z-50 transition-transform duration-300 lg:translate-x-0 overflow-hidden">
     <div class="flex flex-col h-full p-4">
         <!-- Brand Anchor -->
-        <div class="flex items-center gap-3 px-2 py-6 mb-8 border-b border-cream/5">
+        <a routerLink="/administracion" (click)="closeSidebar()" class="flex items-center gap-3 px-2 py-6 mb-8 border-b border-cream/5 cursor-pointer">
             <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg text-moss">
                 <img src="/favicon.ico" alt="Paskana Logo" class="h-8 w-8 object-contain" />
             </div>
@@ -18,11 +18,11 @@
                 <span
                     class="text-[9px] uppercase tracking-widest text-blossom font-bold bg-white/5 px-2 py-0.5 rounded-full mt-1.5 inline-block">Administración</span>
             </div>
-        </div>
+        </a>
         <!-- Navigation Links -->
         <nav class="flex-1 space-y-1.5 sidebar-scroll overflow-y-auto pr-1">
             <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 routerLink="/administracion" [routerLinkActiveOptions]="{exact: true}"
                 routerLinkActive="text-cream bg-gradient-to-r from-leaf to-earth border-l-4 border-blossom rounded-r-xl shadow-md pl-3">
                 <!-- dashboard icon -->
@@ -35,7 +35,7 @@
                     class="font-medium text-sm group-[.pl-3]:font-semibold group-[.pl-3]:tracking-wide">Dashboard</span>
             </a>
             <!-- Pedidos -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 routerLink="/administracion/pedidos"
                 routerLinkActive="text-cream bg-gradient-to-r from-leaf to-earth border-l-4 border-blossom rounded-r-xl shadow-md pl-3">
                 <!-- shopping_cart icon -->
@@ -47,7 +47,7 @@
                 <span class="font-medium text-sm group-[.pl-3]:font-semibold group-[.pl-3]:tracking-wide">Pedidos</span>
             </a>
             <!-- Caja -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 routerLink="/administracion/caja"
                 routerLinkActive="text-cream bg-gradient-to-r from-leaf to-earth border-l-4 border-blossom rounded-r-xl shadow-md pl-3">
                 <!-- Caja icon -->
@@ -59,7 +59,7 @@
                 <span class="font-medium text-sm group-[.pl-3]:font-semibold group-[.pl-3]:tracking-wide">Caja</span>
             </a>
             <!-- Producto -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 routerLink="/administracion/productos"
                 routerLinkActive="text-cream bg-gradient-to-r from-leaf to-earth border-l-4 border-blossom rounded-r-xl shadow-md pl-3">
                 <!-- product icon -->
@@ -71,7 +71,7 @@
                     class="font-medium text-sm group-[.pl-3]:font-semibold group-[.pl-3]:tracking-wide">Productos</span>
             </a>
             <!-- Personal -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 routerLink="/administracion/personal"
                 routerLinkActive="text-cream bg-gradient-to-r from-leaf to-earth border-l-4 border-blossom rounded-r-xl shadow-md pl-3">
                 <!-- Personal icon -->
@@ -84,7 +84,7 @@
                     class="font-medium text-sm group-[.pl-3]:font-semibold group-[.pl-3]:tracking-wide">Personal</span>
             </a>
             <!-- Reportes -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 href="#">
                 <!-- Reportes icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -95,7 +95,7 @@
                 <span class="font-medium text-sm">Reportes</span>
             </a>
             <!-- Settings -->
-            <a class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
+            <a (click)="closeSidebar()" class="flex items-center gap-3 px-4 py-3 text-cream/75 hover:text-cream hover:bg-white/5 hover:pl-6 border-l-4 border-transparent hover:border-leaf-light/35 rounded-r-xl cursor-pointer transition-all duration-300 group"
                 href="#">
                 <!-- settings icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -109,7 +109,7 @@
         </nav>
         <!-- CTA & User Profile -->
         <div class="mt-auto pt-6 border-t border-cream/10">
-            <a routerLink="/administracion/pedido"
+            <a routerLink="/administracion/pedido" (click)="closeSidebar()"
                 class="w-full bg-gradient-to-r from-blossom to-leaf-light text-moss font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 mb-6 hover:from-leaf-light hover:to-blossom hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-lg shadow-blossom/10 cursor-pointer text-sm">
                 <!-- add icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"

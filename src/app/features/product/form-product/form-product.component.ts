@@ -44,7 +44,8 @@ export class FormProductComponent implements OnInit {
     { label: 'Meriendas', value: 'merienda' },
     { label: 'Pizza', value: 'pizza' },
     { label: 'Licuado', value: 'licuado' },
-    { label: 'Papas', value: 'papas' }
+    { label: 'Papas', value: 'papas' },
+    { label: 'Helados', value: 'helado' }
   ];
 
   selectedFileName = '';

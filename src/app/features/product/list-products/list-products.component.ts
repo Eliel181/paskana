@@ -31,7 +31,8 @@ export class ListProductsComponent implements OnInit, OnDestroy {
     { label: 'Meriendas', value: 'merienda' },
     { label: 'Pizza', value: 'pizza' },
     { label: 'Licuados', value: 'licuado' },
-    { label: 'Papas', value: 'papas' }
+    { label: 'Papas', value: 'papas' },
+    { label: 'Helados', value: 'helado' }
   ];
 
   selectedCategory: CategoriaProducto | null = null;

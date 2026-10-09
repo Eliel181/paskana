@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, inject, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Pedido } from '../../../core/interfaces/pedido.model';
 
@@ -13,6 +14,7 @@ import { Pedido } from '../../../core/interfaces/pedido.model';
 export class MyOrdersComponent implements OnInit, OnDestroy, OnChanges {
   private firestoreService = inject(FirestoreService);
   private authService = inject(AuthService);
+  private router = inject(Router);
   private subscription: Subscription | null = null;
 
   @Input() selectedDate: Date = new Date();
@@ -78,6 +80,10 @@ export class MyOrdersComponent implements OnInit, OnDestroy, OnChanges {
     return d.getDate() === targetDate.getDate() &&
            d.getMonth() === targetDate.getMonth() &&
            d.getFullYear() === targetDate.getFullYear();
+  }
+
+  editarPedido(order: Pedido) {
+    this.router.navigate(['/administracion/pedido', order.id]);
   }
 
   toggleOrderExpansion(orderId: string): void {

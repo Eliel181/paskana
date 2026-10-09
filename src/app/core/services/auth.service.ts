@@ -219,4 +219,18 @@ export class AuthService {
       throw new Error(error.message || 'No se pudo enviar el email de recuperación.');
     }
   }
+
+  async updateUserProfile(data: { nombre: string; apellido: string; telefono: string; perfil?: string }): Promise<void> {
+    const user = this.currentUser();
+    if (!user) throw new Error('No hay usuario autenticado');
+
+    await this.firestoreService.updateDocument('usuarios', user.uid, data);
+
+    // Actualizar signal local para que la interfaz se refresque en tiempo real
+    this.currentUser.set({
+      ...user,
+      ...data
+    });
+  }
 }
+

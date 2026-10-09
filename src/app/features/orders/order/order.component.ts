@@ -1,25 +1,33 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Producto } from '../../../core/interfaces/producto.model';
 import { Pedido, PedidoItem } from '../../../core/interfaces/pedido.model';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-order',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
 })
 export class OrderComponent implements OnInit, OnDestroy {
   private firestoreService = inject(FirestoreService);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private subscription: Subscription | null = null;
 
   isCartOpen = false;
   isLoading = true;
+  isEditMode = false;
+  orderId: string | null = null;
+  originalOrder: Pedido | null = null;
   productos: Producto[] = [];
+  filteredItems: Producto[] = [];
   selectedCategory = 'todos';
 
   // Cart state
@@ -29,40 +37,82 @@ export class OrderComponent implements OnInit, OnDestroy {
   orderNumber = '';
 
   categories = [
-    { label: 'Todo', value: 'todos' },
-    { label: 'Cafés', value: 'cafe' },
-    { label: 'Tés', value: 'te' },
-    { label: 'Bebidas', value: 'bebida' },
-    { label: 'Jugos', value: 'jugo' },
-    { label: 'Licuados', value: 'licuado' },
-    { label: 'Sándwiches', value: 'sandwich' },
-    { label: 'Tostados', value: 'tostado' },
-    { label: 'Pizzas', value: 'pizza' },
-    { label: 'Papas', value: 'papas' },
-    { label: 'Minutas', value: 'minuta' },
-    { label: 'Facturas', value: 'factura' },
-    { label: 'Tortas', value: 'torta' },
-    { label: 'Postres', value: 'postre' },
-    { label: 'Desayunos', value: 'desayuno' },
-    { label: 'Meriendas', value: 'merienda' }
+    { label: 'Todo', value: 'todos', icon: '🍽️' },
+    { label: 'Cafés', value: 'cafe', icon: '☕' },
+    { label: 'Tés', value: 'te', icon: '🫖' },
+    { label: 'Bebidas', value: 'bebida', icon: '🥤' },
+    { label: 'Jugos', value: 'jugo', icon: '🧃' },
+    { label: 'Licuados', value: 'licuado', icon: '🥤' },
+    { label: 'Sándwiches', value: 'sandwich', icon: '🥪' },
+    { label: 'Tostados', value: 'tostado', icon: '🍞' },
+    { label: 'Pizzas', value: 'pizza', icon: '🍕' },
+    { label: 'Papas', value: 'papas', icon: '🍟' },
+    { label: 'Minutas', value: 'minuta', icon: '🍔' },
+    { label: 'Facturas', value: 'factura', icon: '🥐' },
+    { label: 'Tortas', value: 'torta', icon: '🍰' },
+    { label: 'Postres', value: 'postre', icon: '🍨' },
+    { label: 'Helados', value: 'helado', icon: '🍦' },
+    { label: 'Desayunos', value: 'desayuno', icon: '🍳' },
+    { label: 'Meriendas', value: 'merienda', icon: '🥞' }
   ];
 
   readonly skeletons = Array(8).fill(0);
 
   ngOnInit(): void {
-    this.generateOrderNumber();
+    this.checkRouteParams();
+    this.loadProducts();
+  }
+
+  private loadProducts(): void {
     this.subscription = this.firestoreService
       .getCollection<Producto>('productos')
       .subscribe({
         next: (data) => {
           this.productos = data.filter(p => p.disponible);
-          this.isLoading = false;
+          this.updateFilteredItems();
+          if (!this.isEditMode) {
+            this.isLoading = false;
+          }
         },
         error: (err) => {
           console.error('Error loading products for order screen:', err);
           this.isLoading = false;
         }
       });
+  }
+
+  private checkRouteParams(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.orderId = id;
+      this.loadOrderData(id);
+    } else {
+      this.generateOrderNumber();
+    }
+  }
+
+  private async loadOrderData(id: string): Promise<void> {
+    try {
+      this.isLoading = true;
+      const order = await this.firestoreService.getDocument<Pedido>('pedidos', id);
+      if (order) {
+        this.originalOrder = order;
+        this.cartItems = order.items.map(item => ({ ...item, comentario: item.comentario || '' }));
+        this.orderNumber = order.codigoOrden || String(order.numeroPedido);
+        this.isDelivery = !!order.paraLlevar;
+        this.selectedTable = order.mesa || 1;
+      } else {
+        console.error('Pedido no encontrado:', id);
+        alert('No se encontró el pedido.');
+        this.router.navigate(['/administracion/pedidos']);
+      }
+    } catch (err) {
+      console.error('Error al cargar datos del pedido:', err);
+      alert('Error al cargar el pedido.');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -81,13 +131,17 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.isCartOpen = !this.isCartOpen;
   }
 
-  get filteredItems(): Producto[] {
-    if (this.selectedCategory === 'todos') return this.productos;
-    return this.productos.filter(p => p.categoria === this.selectedCategory);
-  }
-
   selectCategory(category: string): void {
     this.selectedCategory = category;
+    this.updateFilteredItems();
+  }
+
+  updateFilteredItems(): void {
+    if (this.selectedCategory === 'todos') {
+      this.filteredItems = this.productos;
+    } else {
+      this.filteredItems = this.productos.filter(p => p.categoria === this.selectedCategory);
+    }
   }
 
   formatPrice(price: any): string {
@@ -107,7 +161,8 @@ export class OrderComponent implements OnInit, OnDestroy {
         nombre: producto.nombre,
         cantidad: 1,
         precioUnitario: producto.precio,
-        subtotal: producto.precio
+        subtotal: producto.precio,
+        comentario: ''
       });
     }
   }
@@ -145,42 +200,61 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     try {
       this.isLoading = true;
-      const user = this.authService.currentUser();
-      const pedidoPayload: Omit<Pedido, 'id'> = {
-        numeroPedido: Math.floor(100000 + Math.random() * 900000),
-        estado: 'pendiente',
-        items: this.cartItems,
-        subtotal: this.cartSubtotal,
-        total: this.cartTotal,
-        metodoPago: 'por cobrar',
-        estaPagado: false,
-        fechaCreacion: new Date(),
-        codigoOrden: this.orderNumber,
-        usuarioId: user?.uid,
-        usuarioNombre: user ? `${user.nombre} ${user.apellido}`.trim() : undefined,
-        ...(this.isDelivery ? { paraLlevar: true } : { mesa: this.selectedTable, paraLlevar: false })
-      };
+      if (this.isEditMode && this.orderId) {
+        await this.firestoreService.updateDocument<Pedido>('pedidos', this.orderId, {
+          items: this.cartItems,
+          subtotal: this.cartSubtotal,
+          total: this.cartTotal,
+          fechaActualizacion: new Date(),
+          ...(this.isDelivery ? { paraLlevar: true, mesa: undefined } : { mesa: this.selectedTable, paraLlevar: false })
+        });
+        alert('¡Pedido actualizado con éxito!');
+        this.router.navigate(['/administracion/pedidos']);
+      } else {
+        const user = this.authService.currentUser();
+        const pedidoPayload: Omit<Pedido, 'id'> = {
+          numeroPedido: Math.floor(100000 + Math.random() * 900000),
+          estado: 'pendiente',
+          items: this.cartItems,
+          subtotal: this.cartSubtotal,
+          total: this.cartTotal,
+          metodoPago: 'por cobrar',
+          estaPagado: false,
+          fechaCreacion: new Date(),
+          codigoOrden: this.orderNumber,
+          usuarioId: user?.uid,
+          usuarioNombre: user ? `${user.nombre} ${user.apellido}`.trim() : undefined,
+          ...(this.isDelivery ? { paraLlevar: true } : { mesa: this.selectedTable, paraLlevar: false })
+        };
 
-      await this.firestoreService.addDocument('pedidos', pedidoPayload);
+        await this.firestoreService.addDocument('pedidos', pedidoPayload);
 
-      this.cartItems = [];
-      this.generateOrderNumber();
-      this.isCartOpen = false;
-      alert('¡Pedido confirmado con éxito!');
+        this.cartItems = [];
+        this.generateOrderNumber();
+        this.isCartOpen = false;
+        alert('¡Pedido confirmado con éxito!');
+        this.router.navigate(['/administracion/pedidos']);
+      }
     } catch (err) {
-      console.error('Error al confirmar el pedido:', err);
-      alert('Hubo un error al confirmar el pedido.');
+      console.error('Error al procesar el pedido:', err);
+      alert('Hubo un error al guardar el pedido.');
     } finally {
       this.isLoading = false;
     }
   }
 
   cancelarPedido() {
-    if (this.cartItems.length === 0) return;
+    if (this.isEditMode) {
+      if (confirm('¿Estás seguro de que deseas descartar los cambios?')) {
+        this.router.navigate(['/administracion/pedidos']);
+      }
+    } else {
+      if (this.cartItems.length === 0) return;
 
-    if (confirm('¿Estás seguro de que deseas cancelar el pedido actual?')) {
-      this.cartItems = [];
-      this.isCartOpen = false;
+      if (confirm('¿Estás seguro de que deseas cancelar el pedido actual?')) {
+        this.cartItems = [];
+        this.isCartOpen = false;
+      }
     }
   }
 }
