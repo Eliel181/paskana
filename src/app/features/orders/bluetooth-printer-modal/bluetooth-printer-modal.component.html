@@ -1,0 +1,143 @@
+@if (isOpen) {
+<div
+  class="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-moss/60 backdrop-blur-md animate-in fade-in duration-200">
+  <div class="bg-white rounded-3xl border border-cream shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+    <!-- Modal Header -->
+    <div class="p-6 bg-gradient-to-r from-moss via-[#3E2B20] to-[#302118] text-cream flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-blossom border border-white/10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="font-display text-lg font-bold">Impresora Bluetooth</h2>
+          <p class="text-[11px] text-cream/70">Configuración de impresión térmica (58mm)</p>
+        </div>
+      </div>
+      <button (click)="onClose()"
+        class="p-2 rounded-xl text-cream/80 hover:text-cream hover:bg-white/10 transition-colors cursor-pointer"
+        aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 space-y-5">
+      <!-- Browser Support Alert -->
+      @if (!btService.isBluetoothSupported()) {
+      <div
+        class="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs font-semibold flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <div>
+          <p class="font-bold">Navegador no compatible</p>
+          <p class="text-[11px] font-normal text-amber-700 mt-0.5">La API de Web Bluetooth requiere Google Chrome,
+            Microsoft Edge o Chrome Android corriendo sobre una conexión HTTPS o localhost.</p>
+        </div>
+      </div>
+      }
+
+      <!-- Connection Status Card -->
+      <div class="p-4 rounded-2xl border flex items-center justify-between"
+        [ngClass]="btService.isConnected() ? 'bg-emerald-50/80 border-emerald-200' : 'bg-cream/40 border-cream'">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-moss font-bold bg-white shadow-2xs">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-moss" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+            </div>
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white"
+              [ngClass]="btService.isConnected() ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'">
+            </span>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-moss">
+              {{ btService.isConnected() ? btService.deviceName() : 'Sin impresora conectada' }}
+            </p>
+            <p class="text-[10px] uppercase tracking-wider font-semibold text-text-dark/50 mt-0.5">
+              {{ btService.isConnected() ? 'Impresora Conectada' : 'Desconectada' }}
+            </p>
+          </div>
+        </div>
+
+        @if (btService.isConnected()) {
+        <button (click)="disconnectPrinter()"
+          class="px-3 py-1.5 bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-xl text-xs font-bold transition-colors cursor-pointer">
+          Desconectar
+        </button>
+        }
+      </div>
+
+      <!-- Error Message Display -->
+      @if (btService.errorMessage()) {
+      <div
+        class="p-3.5 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs font-semibold flex items-center gap-2.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ btService.errorMessage() }}</span>
+      </div>
+      }
+
+      <!-- Actions -->
+      <div class="space-y-3 pt-2">
+        @if (!btService.isConnected()) {
+        <button (click)="connectPrinter()" [disabled]="!btService.isBluetoothSupported()"
+          class="w-full py-3.5 px-4 bg-gradient-to-r from-leaf to-earth text-cream font-bold text-xs rounded-2xl hover:from-moss hover:to-leaf transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <span>Buscar y Conectar Impresora</span>
+        </button>
+        } @else {
+        <button (click)="printTestTicket()" [disabled]="btService.isPrinting()"
+          class="w-full py-3.5 px-4 bg-moss text-cream font-bold text-xs rounded-2xl hover:bg-leaf transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+          @if (btService.isPrinting()) {
+          <svg class="animate-spin h-4 w-4 text-cream" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <span>Imprimiendo Ticket de Prueba...</span>
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>Imprimir Ticket de Prueba</span>
+          }
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-4 bg-cream/30 border-t border-cream flex justify-end">
+      <button (click)="onClose()"
+        class="px-5 py-2.5 bg-cream/70 hover:bg-cream text-moss font-bold text-xs rounded-2xl transition-colors cursor-pointer">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+}

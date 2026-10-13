@@ -4,21 +4,25 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Pedido } from '../../../core/interfaces/pedido.model';
 import { MyOrdersComponent } from '../my-orders/my-orders.component';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { BluetoothPrinterModalComponent } from '../bluetooth-printer-modal/bluetooth-printer-modal.component';
+import { BluetoothPrintService } from '../../../core/services/bluetooth-print.service';
 
 // Configurar fuentes virtuales de pdfmake
 pdfMake.vfs = pdfFonts && pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfMake.vfs;
 
 @Component({
   selector: 'app-all-orders',
-  imports: [MyOrdersComponent, FormsModule],
+  imports: [CommonModule, MyOrdersComponent, FormsModule, BluetoothPrinterModalComponent],
   templateUrl: './all-orders.component.html',
   styleUrl: './all-orders.component.css'
 })
 export class AllOrdersComponent implements OnInit, OnDestroy {
   private firestoreService = inject(FirestoreService);
+  public btPrintService = inject(BluetoothPrintService);
   private router = inject(Router);
   private subscription: Subscription | null = null;
 
@@ -26,6 +30,9 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
   allOrders: Pedido[] = [];
   orders: Pedido[] = [];
   activeTab: 'pedidos' | 'mis-pedidos' = 'pedidos';
+
+  // Bluetooth Modal State
+  isBtModalOpen = false;
 
   // Date Slider State
   selectedDate: Date = new Date();
@@ -245,6 +252,38 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
     };
 
     pdfMake.createPdf(docDefinition).open();
+  }
+
+  async imprimirTicketBluetooth(order: Pedido): Promise<void> {
+    if (!this.btPrintService.isConnected()) {
+      this.isBtModalOpen = true;
+      return;
+    }
+
+    const pedidoNorm: any = {
+      ...order,
+      numeroPedido: order.codigoOrden ? order.codigoOrden : order.numeroPedido,
+      fecha: order.fechaCreacion,
+      tipoPedido: order.paraLlevar ? 'TakeAway' : 'Mesa',
+      numeroMesa: order.mesa,
+      nombreCliente: order.observaciones,
+      items: order.items.map((i: any) => ({
+        ...i,
+        producto: { id: i.productoId || '', nombre: i.nombre, precio: i.precioUnitario || i.precio || 0, categoria: 'todos' },
+        cantidad: i.cantidad,
+        subtotal: i.subtotal,
+        comentario: i.comentario
+      })),
+      montoTotal: order.total,
+      metodoPago: order.metodoPago || 'Efectivo',
+      estado: order.estado
+    };
+
+    try {
+      await this.btPrintService.printPedido(pedidoNorm);
+    } catch (err) {
+      console.error('Error al imprimir por Bluetooth:', err);
+    }
   }
 
   gestionarPedido(order: Pedido) {

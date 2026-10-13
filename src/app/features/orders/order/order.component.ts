@@ -8,6 +8,8 @@ import { Pedido, PedidoItem } from '../../../core/interfaces/pedido.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { BluetoothPrintService } from '../../../core/services/bluetooth-print.service';
+
 @Component({
   selector: 'app-order',
   imports: [CommonModule, FormsModule],
@@ -17,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 export class OrderComponent implements OnInit, OnDestroy {
   private firestoreService = inject(FirestoreService);
   private authService = inject(AuthService);
+  public btPrintService = inject(BluetoothPrintService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private subscription: Subscription | null = null;
@@ -228,6 +231,22 @@ export class OrderComponent implements OnInit, OnDestroy {
         };
 
         await this.firestoreService.addDocument('pedidos', pedidoPayload);
+
+        // Imprimir comanda por Bluetooth de forma automática si la impresora está conectada
+        if (this.btPrintService.isConnected()) {
+          try {
+            await this.btPrintService.printPedido({
+              ...pedidoPayload,
+              items: this.cartItems.map(item => ({
+                ...item,
+                producto: { id: item.productoId, nombre: item.nombre, precio: item.precioUnitario, categoria: 'todos' }
+              })),
+              montoTotal: this.cartTotal
+            } as any);
+          } catch (printErr) {
+            console.error('Error al autimprimir comanda Bluetooth:', printErr);
+          }
+        }
 
         this.cartItems = [];
         this.generateOrderNumber();

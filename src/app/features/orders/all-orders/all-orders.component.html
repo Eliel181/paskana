@@ -5,6 +5,17 @@
       <h1 class="text-3xl font-bold font-display text-moss">Control de Pedidos</h1>
       <p class="text-text-dark/70 text-sm mt-1">Monitorea y despacha las comandas del día en tiempo real.</p>
     </div>
+
+    <!-- Bluetooth Printer Status/Config Button -->
+    <button (click)="isBtModalOpen = true"
+      class="flex items-center gap-2 px-4 py-2.5 bg-white border rounded-2xl shadow-xs hover:shadow-md transition-all cursor-pointer self-start sm:self-center"
+      [ngClass]="btPrintService.isConnected() ? 'border-emerald-300 bg-emerald-50/50 text-emerald-800' : 'border-cream text-moss'">
+      <div class="w-2.5 h-2.5 rounded-full" [ngClass]="btPrintService.isConnected() ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'"></div>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+      </svg>
+      <span class="text-xs font-bold">{{ btPrintService.isConnected() ? btPrintService.deviceName() : 'Impresora Bluetooth' }}</span>
+    </button>
   </div>
 
   <!-- Date Slider Selector -->
@@ -284,15 +295,24 @@
 
           <!-- Actions -->
           <div class="flex flex-col sm:flex-row gap-3 pt-1">
-            <!-- Imprimir Ticket -->
+            <!-- Imprimir PDF -->
             <button (click)="imprimirTicket(order)"
-              class="flex-1 py-2.5 px-4 rounded-xl border border-leaf/30 text-leaf font-bold text-xs hover:bg-leaf/5 hover:border-leaf/50 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              class="flex-1 py-2.5 px-3 rounded-xl border border-cream text-text-dark/80 font-bold text-xs hover:bg-cream/40 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
               </svg>
-              Imprimir Ticket
+              <span>PDF</span>
+            </button>
+
+            <!-- Imprimir Bluetooth -->
+            <button (click)="imprimirTicketBluetooth(order)"
+              class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-leaf to-earth text-cream font-bold text-xs hover:from-moss hover:to-leaf transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blossom" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              </svg>
+              <span>Bluetooth</span>
             </button>
 
             <!-- Editar Pedido -->
@@ -420,3 +440,6 @@
   </div>
 </div>
 }
+
+<!-- Bluetooth Printer Modal -->
+<app-bluetooth-printer-modal [isOpen]="isBtModalOpen" (closeModal)="isBtModalOpen = false" />
