@@ -122,7 +122,7 @@ export class EscPosBuilder {
     const result: number[] = [];
     
     // Replace emoji or special unsupported symbols with plain text representations
-    const cleanText = text.replace(/💬/g, '[Nota]');
+    const cleanText = text.replace(/💬\s*/g, '');
 
     for (let i = 0; i < cleanText.length; i++) {
       const char = cleanText[i];

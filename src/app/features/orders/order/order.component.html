@@ -267,15 +267,23 @@
             </div>
 
             <div class="space-y-2 pt-1">
-                <button (click)="confirmarPedido()" [disabled]="cartItems.length === 0"
+                <button (click)="confirmarPedido()" [disabled]="cartItems.length === 0 || isSubmitting"
                     class="w-full py-3 bg-gradient-to-r from-leaf via-earth to-moss hover:opacity-95 text-cream text-xs font-bold uppercase tracking-wider rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (isSubmitting) {
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    Procesando...
+                    } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     {{ isEditMode ? 'Guardar Cambios' : 'Confirmar Pedido' }}
+                    }
                 </button>
-                <button (click)="cancelarPedido()" [disabled]="cartItems.length === 0"
+                <button (click)="cancelarPedido()" [disabled]="cartItems.length === 0 || isSubmitting"
                     class="w-full py-2 bg-transparent border border-cream/90 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-xs font-semibold rounded-2xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancelar
                 </button>
@@ -376,15 +384,23 @@
             </div>
 
             <div class="space-y-2">
-                <button (click)="confirmarPedido()" [disabled]="cartItems.length === 0"
+                <button (click)="confirmarPedido()" [disabled]="cartItems.length === 0 || isSubmitting"
                     class="w-full py-3 bg-gradient-to-r from-leaf to-earth hover:from-moss hover:to-leaf text-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (isSubmitting) {
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    Procesando...
+                    } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     {{ isEditMode ? 'Guardar Cambios' : 'Confirmar Pedido' }}
+                    }
                 </button>
-                <button (click)="cancelarPedido()" [disabled]="cartItems.length === 0"
+                <button (click)="cancelarPedido()" [disabled]="cartItems.length === 0 || isSubmitting"
                     class="w-full py-2.5 bg-transparent border border-cream/80 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-text-dark/60 text-sm font-semibold rounded-2xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancelar
                 </button>

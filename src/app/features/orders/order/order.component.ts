@@ -26,6 +26,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   isCartOpen = false;
   isLoading = true;
+  isSubmitting = false;
   isEditMode = false;
   orderId: string | null = null;
   originalOrder: Pedido | null = null;
@@ -197,12 +198,12 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   async confirmarPedido() {
-    if (this.cartItems.length === 0) {
+    if (this.cartItems.length === 0 || this.isSubmitting) {
       return;
     }
 
     try {
-      this.isLoading = true;
+      this.isSubmitting = true;
       if (this.isEditMode && this.orderId) {
         await this.firestoreService.updateDocument<Pedido>('pedidos', this.orderId, {
           items: this.cartItems,
@@ -226,7 +227,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           fechaCreacion: new Date(),
           codigoOrden: this.orderNumber,
           usuarioId: user?.uid,
-          usuarioNombre: user ? `${user.nombre} ${user.apellido}`.trim() : undefined,
+          usuarioNombre: user ? `${user.nombre}`.trim() : undefined,
           ...(this.isDelivery ? { paraLlevar: true } : { mesa: this.selectedTable, paraLlevar: false })
         };
 
@@ -258,7 +259,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       console.error('Error al procesar el pedido:', err);
       alert('Hubo un error al guardar el pedido.');
     } finally {
-      this.isLoading = false;
+      this.isSubmitting = false;
     }
   }
 

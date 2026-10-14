@@ -166,7 +166,7 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
   // Actions
   imprimirTicket(order: Pedido) {
     // Calcular altura estimada dinámicamente para evitar saltos de página en tickets de 58mm
-    let dynamicHeight = 135; // Base estática (márgenes + encabezado + totales + pie)
+    let dynamicHeight = 160; // Base estática (márgenes + encabezado + usuario + totales + leyenda + pie)
     
     // En 58mm (ancho ~164pt / printable ~148pt), estimamos unos 26 caracteres por línea con fuente 8
     order.items.forEach(item => {
@@ -202,7 +202,8 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
         
         { text: `Ticket #${order.codigoOrden || order.numeroPedido}`, fontSize: 10, bold: true, margin: [0, 0, 0, 2] },
         { text: `Hora: ${this.formatOnlyTime(order.fechaCreacion)}`, fontSize: 8, margin: [0, 0, 0, 2] },
-        { text: `Servicio: ${order.paraLlevar ? 'Para Llevar' : 'Mesa ' + order.mesa}`, fontSize: 8, margin: [0, 0, 0, 4] },
+        { text: `Servicio: ${order.paraLlevar ? 'Para Llevar' : 'Mesa ' + order.mesa}`, fontSize: 8, margin: [0, 0, 0, 2] },
+        ...(order.usuarioNombre ? [{ text: `Atendido por: ${order.usuarioNombre}`, fontSize: 8, margin: [0, 0, 0, 4] }] : []),
         { text: separator, fontSize: 7, alignment: 'center', margin: [0, 0, 0, 4] },
         
         {
@@ -212,7 +213,7 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
               {
                 text: [
                   { text: `${item.cantidad}x ${item.nombre}`, bold: true },
-                  ...(item.comentario && item.comentario.trim() ? [{ text: `\n  - ${item.comentario.trim()}`, fontSize: 7, italics: true, bold: false }] : [])
+                  ...(item.comentario && item.comentario.trim() ? [{ text: `\n  (${item.comentario.trim()})`, fontSize: 7, italics: true, bold: false }] : [])
                 ],
                 fontSize: 8
               },
@@ -246,6 +247,7 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
         },
         
         { text: separator, fontSize: 7, alignment: 'center', margin: [0, 2, 0, 4] },
+        { text: 'NO VÁLIDO COMO FACTURA', fontSize: 8, bold: true, alignment: 'center', margin: [0, 0, 0, 3] },
         { text: '¡Gracias por tu visita!', fontSize: 8.5, bold: true, alignment: 'center', margin: [0, 1, 0, 1] },
         { text: 'Paskana - Control de Comandas', fontSize: 6.5, alignment: 'center', margin: [0, 1, 0, 0] }
       ]

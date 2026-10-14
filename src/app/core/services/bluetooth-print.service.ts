@@ -85,7 +85,7 @@ export class BluetoothPrintService {
 
     try {
       console.log('Buscando dispositivos Bluetooth...');
-      
+
       // Solicitar dispositivo con servicios comunes de impresoras térmicas
       this.bluetoothDevice = await navigator.bluetooth!.requestDevice({
         acceptAllDevices: true,
@@ -103,7 +103,7 @@ export class BluetoothPrintService {
       this.isConnected.set(true);
       const name = this.bluetoothDevice.name || 'Impresora Bluetooth';
       this.deviceName.set(name);
-      
+
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('paskana_bt_printer_name', name);
       }
@@ -236,7 +236,7 @@ export class BluetoothPrintService {
       const CHUNK_SIZE = 128; // Paquetes de 128 bytes para evitar saturar el búfer de la impresora
       for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
         const chunk = buffer.slice(i, i + CHUNK_SIZE);
-        
+
         if (this.printCharacteristic.properties.writeWithoutResponse) {
           await this.printCharacteristic.writeValueWithoutResponse(chunk);
         } else {
@@ -263,7 +263,7 @@ export class BluetoothPrintService {
    */
   async printTestTicket(): Promise<void> {
     const builder = new EscPosBuilder(32);
-    
+
     builder
       .align('center')
       .bold(true)
@@ -313,7 +313,7 @@ export class BluetoothPrintService {
       .textLine('PASKANA')
       .doubleSize(false)
       .bold(false)
-      .textLine('Comanda de Cocina')
+      .textLine('Control de Comandas')
       .separator('=');
 
     // Datos del Pedido
@@ -325,7 +325,10 @@ export class BluetoothPrintService {
     }
 
     builder.textLine(`Hora: ${horaStr}`);
-    
+    if (pedido.usuarioNombre) {
+      builder.textLine(`Atendido por: ${pedido.usuarioNombre}`);
+    }
+
     let ubicacionStr = pedido.paraLlevar ? 'Servicio: Para Llevar' : `Servicio: Mesa ${pedido.mesa || 1}`;
     if (pedido.observaciones) {
       ubicacionStr += ` - ${pedido.observaciones}`;
@@ -344,13 +347,13 @@ export class BluetoothPrintService {
         const nombreItem = item.nombre || (item as any).producto?.nombre || 'Producto';
         const subtotalNum = item.subtotal || ((item.precioUnitario || 0) * cantidad);
         const subtotalStr = `$${subtotalNum.toLocaleString('es-AR')}`;
-        
+
         const leftCol = `${cantidad}x ${nombreItem}`;
         builder.row(leftCol, subtotalStr);
 
         // Si el producto tiene comentario personalizado
         if (item.comentario && item.comentario.trim()) {
-          builder.textLine(`   [Nota] ${item.comentario.trim()}`);
+          builder.textLine(`   (${item.comentario.trim()})`);
         }
       });
     }
@@ -373,6 +376,9 @@ export class BluetoothPrintService {
     builder
       .separator('=')
       .align('center')
+      .bold(true)
+      .textLine('NO VALIDO COMO FACTURA')
+      .bold(false)
       .textLine('¡Gracias por su compra!')
       .cut();
 
