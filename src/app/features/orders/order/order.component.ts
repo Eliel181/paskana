@@ -153,12 +153,25 @@ export class OrderComponent implements OnInit, OnDestroy {
     return isNaN(num) ? '$0' : `$${num.toLocaleString('es-AR')}`;
   }
 
-  // Cart Operations
+  // ── Cart Helpers ───────────────────────────────────────────────────────────
+
+  /** Determina si un producto puede pedirse en media porción */
+  canBeHalf(producto: Producto): boolean {
+    return producto.categoria === 'pizza';
+  }
+
+  // ── Cart Operations ─────────────────────────────────────────────────────────
+
+  /** Agrega una porción entera al carrito */
   addToCart(producto: Producto) {
-    const existingIndex = this.cartItems.findIndex(item => item.productoId === producto.id);
+    // Busca solo la línea de porción entera (no la de media)
+    const existingIndex = this.cartItems.findIndex(
+      item => item.productoId === producto.id && !item.esMediaPorcion
+    );
     if (existingIndex > -1) {
       this.cartItems[existingIndex].cantidad++;
-      this.cartItems[existingIndex].subtotal = this.cartItems[existingIndex].cantidad * this.cartItems[existingIndex].precioUnitario;
+      this.cartItems[existingIndex].subtotal =
+        this.cartItems[existingIndex].cantidad * this.cartItems[existingIndex].precioUnitario;
     } else {
       this.cartItems.push({
         productoId: producto.id,
@@ -167,6 +180,32 @@ export class OrderComponent implements OnInit, OnDestroy {
         precioUnitario: producto.precio,
         subtotal: producto.precio,
         comentario: ''
+      });
+    }
+  }
+
+  /** Agrega media porción al carrito (precio dividido a la mitad) */
+  addHalfToCart(producto: Producto, event: Event) {
+    event.stopPropagation(); // Evitar que dispare el (click) de la tarjeta
+    const halfPrice = producto.precio / 2;
+
+    // Busca solo la línea de media porción del mismo producto
+    const existingIndex = this.cartItems.findIndex(
+      item => item.productoId === producto.id && item.esMediaPorcion
+    );
+    if (existingIndex > -1) {
+      this.cartItems[existingIndex].cantidad++;
+      this.cartItems[existingIndex].subtotal =
+        this.cartItems[existingIndex].cantidad * halfPrice;
+    } else {
+      this.cartItems.push({
+        productoId: producto.id,
+        nombre: producto.nombre,
+        cantidad: 1,
+        precioUnitario: halfPrice,
+        subtotal: halfPrice,
+        comentario: '',
+        esMediaPorcion: true
       });
     }
   }
@@ -181,7 +220,10 @@ export class OrderComponent implements OnInit, OnDestroy {
       item.cantidad--;
       item.subtotal = item.cantidad * item.precioUnitario;
     } else {
-      this.cartItems = this.cartItems.filter(ci => ci.productoId !== item.productoId);
+      // Filtra por productoId Y el flag de media porción para no eliminar la fila equivocada
+      this.cartItems = this.cartItems.filter(
+        ci => !(ci.productoId === item.productoId && !!ci.esMediaPorcion === !!item.esMediaPorcion)
+      );
     }
   }
 
@@ -232,22 +274,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         };
 
         await this.firestoreService.addDocument('pedidos', pedidoPayload);
-
-        // Imprimir comanda por Bluetooth de forma automática si la impresora está conectada
-        if (this.btPrintService.isConnected()) {
-          try {
-            await this.btPrintService.printPedido({
-              ...pedidoPayload,
-              items: this.cartItems.map(item => ({
-                ...item,
-                producto: { id: item.productoId, nombre: item.nombre, precio: item.precioUnitario, categoria: 'todos' }
-              })),
-              montoTotal: this.cartTotal
-            } as any);
-          } catch (printErr) {
-            console.error('Error al autimprimir comanda Bluetooth:', printErr);
-          }
-        }
 
         this.cartItems = [];
         this.generateOrderNumber();

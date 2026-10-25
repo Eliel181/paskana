@@ -29,9 +29,10 @@ export interface PedidoItem {
     productoId: string;
     nombre: string;
     cantidad: number;
-    precioUnitario: number;
+    precioUnitario: number;    // Precio ya dividido si es media porción (precio / 2)
     subtotal: number;
     comentario?: string;
+    esMediaPorcion?: boolean;  // true = se solicitó media porción (precio dividido a la mitad)
 }
 
 export type EstadoPedido =

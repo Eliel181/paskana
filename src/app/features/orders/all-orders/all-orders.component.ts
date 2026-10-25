@@ -49,6 +49,7 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
   editEstado: any = 'pendiente';
   editEstaPagado: boolean = false;
   editMetodoPago: any = 'por cobrar';
+  isSaving = false;
 
   ngOnInit(): void {
     this.generateDateSlider();
@@ -300,8 +301,9 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
   }
 
   async guardarGestionPedido() {
-    if (!this.orderToManage) return;
+    if (!this.orderToManage || this.isSaving) return;
     try {
+      this.isSaving = true;
       await this.firestoreService.updateDocument('pedidos', this.orderToManage.id, {
         estado: this.editEstado,
         estaPagado: this.editEstaPagado,
@@ -312,6 +314,8 @@ export class AllOrdersComponent implements OnInit, OnDestroy {
     } catch (err) {
       console.error('Error al actualizar pedido:', err);
       alert('Error al actualizar el pedido');
+    } finally {
+      this.isSaving = false;
     }
   }
 

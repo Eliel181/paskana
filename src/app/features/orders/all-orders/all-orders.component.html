@@ -431,9 +431,20 @@
         class="flex-1 py-3 px-4 rounded-xl border border-cream/80 text-text-dark/70 font-semibold text-xs hover:bg-cream transition-colors cursor-pointer">
         Cancelar
       </button>
-      <button (click)="guardarGestionPedido()"
-        class="flex-1 py-3 px-4 rounded-xl bg-leaf text-cream font-bold text-xs hover:bg-moss transition-colors shadow-md cursor-pointer">
-        Guardar Cambios
+      <button (click)="guardarGestionPedido()" [disabled]="isSaving"
+        class="flex-1 py-3 px-4 rounded-xl bg-leaf text-cream font-bold text-xs hover:bg-moss transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+        @if (isSaving) {
+          <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          Guardando...
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          Guardar Cambios
+        }
       </button>
     </div>
 

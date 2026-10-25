@@ -348,7 +348,10 @@ export class BluetoothPrintService {
         const subtotalNum = item.subtotal || ((item.precioUnitario || 0) * cantidad);
         const subtotalStr = `$${subtotalNum.toLocaleString('es-AR')}`;
 
-        const leftCol = `${cantidad}x ${nombreItem}`;
+        // Si es media porción, mostrar "1/2" junto a la cantidad para claridad en cocina
+        const esMedia = (item as any).esMediaPorcion;
+        const labelCantidad = esMedia ? `${cantidad}x 1/2` : `${cantidad}x`;
+        const leftCol = `${labelCantidad} ${nombreItem}`;
         builder.row(leftCol, subtotalStr);
 
         // Si el producto tiene comentario personalizado
